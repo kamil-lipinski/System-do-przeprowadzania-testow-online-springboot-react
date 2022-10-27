@@ -18,11 +18,11 @@ import java.util.List;
 public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private AppUserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser u = userRepository.findUserByEmail(username);
+        AppUser u = appUserRepository.findAppUserByEmail(username);
         List<GrantedAuthority> authorityList = new ArrayList<>();
         return new User(u.getEmail(), u.getPassword(), authorityList);
     }

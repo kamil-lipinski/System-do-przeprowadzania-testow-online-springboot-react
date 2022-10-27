@@ -26,7 +26,7 @@ public class AuthenticationController {
     protected final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    private AppUserRepository userRepository;
+    private AppUserRepository appUserRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -98,7 +98,7 @@ public class AuthenticationController {
         String password = JSON.get("password").toString();
         Boolean isTeacher = Boolean.valueOf(JSON.get("isTeacher").toString());
 
-        AppUser newUser = userRepository.findUserByEmail(email);
+        AppUser newUser = appUserRepository.findAppUserByEmail(email);
         if(newUser != null) {
             responseMap.put("error", true);
             responseMap.put("message", "Uzytkownik o adresie email: "+email+" juz istnieje");
@@ -106,7 +106,7 @@ public class AuthenticationController {
         }
 
         newUser = new AppUser(name, surname, email, new BCryptPasswordEncoder().encode(password), isTeacher);
-        userRepository.save(newUser);
+        appUserRepository.save(newUser);
         responseMap.put("error", false);
         responseMap.put("message", "Konto zostalo utworzone pomyslnie");
         return ResponseEntity.ok(responseMap);

@@ -6,13 +6,13 @@ import javax.persistence.*;
 public class AppUser {
     @Id
     @SequenceGenerator(
-            name = "userIDSequence",
-            sequenceName = "userIDSequence",
+            name = "appUserIDSequence",
+            sequenceName = "appUserIDSequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "userIDSequence"
+            generator = "appUserIDSequence"
     )
     private Long userID;
     private String name;

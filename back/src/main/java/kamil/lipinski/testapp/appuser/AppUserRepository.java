@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    @Query(value = "SELECT * FROM app_user u WHERE u.email LIKE :email", nativeQuery = true)
-    AppUser findUserByEmail(@Param("email") String email);
+    @Query(value = "SELECT * FROM app_user u WHERE u.email =:email", nativeQuery = true)
+    AppUser findAppUserByEmail(@Param("email") String email);
 
 }
