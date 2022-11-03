@@ -1,6 +1,5 @@
 package kamil.lipinski.testapp.test;
 
-import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
-import kamil.lipinski.testapp.pytanie.*;
+import kamil.lipinski.testapp.uzytkownik.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path="/test")
+@RequestMapping("/test")
 public class TestController {
 
     @Autowired
@@ -27,7 +26,7 @@ public class TestController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @PostMapping(path="/stworz_test")
+    @PostMapping("/stworz_test")
     public @ResponseBody ResponseEntity<?> stworzTest(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +49,15 @@ public class TestController {
         testRepository.save(nowyTest);
         responseMap.put("error", false);
         responseMap.put("message", "Test utworzony pomyslnie");
+        return ResponseEntity.ok(responseMap);
+    }
+
+    @DeleteMapping("/usun_test/{testID}")
+    public ResponseEntity<?> usunTest(@PathVariable("testID") Long testID){
+        Map<String, Object> responseMap = new HashMap<>();
+        testRepository.delete(testRepository.findTestByTestID(testID));
+        responseMap.put("error", false);
+        responseMap.put("message", "Pomyślnie usunieto pytanie");
         return ResponseEntity.ok(responseMap);
     }
 

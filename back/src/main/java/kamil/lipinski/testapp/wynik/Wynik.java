@@ -28,11 +28,11 @@ public class Wynik {
     private int wynik;
     private Boolean czyUkonczono = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
     private Uzytkownik uzytkownik;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="testID")
     private Test test;
 

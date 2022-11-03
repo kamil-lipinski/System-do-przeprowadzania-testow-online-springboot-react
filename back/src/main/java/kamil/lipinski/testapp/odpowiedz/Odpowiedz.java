@@ -26,11 +26,11 @@ public class Odpowiedz {
     private Long odpowiedzID;
     private String odpowiedz;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
     private Uzytkownik uzytkownik;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pytanieID")
     private Pytanie pytanie;
 

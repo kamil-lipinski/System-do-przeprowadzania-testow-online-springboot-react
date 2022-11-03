@@ -39,7 +39,7 @@ public class Pytanie {
     private String f = "";
     private Boolean fPoprawne = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="testID")
     private Test test;
 

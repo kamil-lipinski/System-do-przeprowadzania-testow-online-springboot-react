@@ -27,7 +27,7 @@ public class Test {
     private String nazwa;
     private String kodDostepu;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
     private Uzytkownik uzytkownik;
 

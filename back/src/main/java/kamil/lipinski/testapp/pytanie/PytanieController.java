@@ -1,6 +1,5 @@
 package kamil.lipinski.testapp.pytanie;
 
-import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,12 +8,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.test.*;
+import kamil.lipinski.testapp.uzytkownik.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path="/pytanie")
+@RequestMapping("/pytanie")
 
 public class PytanieController {
 
@@ -30,27 +30,28 @@ public class PytanieController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @PostMapping(path="/stworz_pytanie")
-    public ResponseEntity<?> addQuestion(@RequestBody HashMap<String, Object> JSON) {
+    @PostMapping("/stworz_pytanie")
+    public ResponseEntity<?> stworzPytanie(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(!(uzytkownikRepository.findUzytkownikByEmail(authentication.getName()).isCzyNauczyciel())){
             responseMap.put("error", true);
-            responseMap.put("message", "uzytkownik nie ma uprawnien do dodawania pytań");
+            responseMap.put("message", "Użytkownik nie ma uprawnień do dodawania pytań");
             return ResponseEntity.status(500).body(responseMap);
         }
         String [] parameters = {"testID", "tresc", "a", "aPoprawne", "b", "bPoprawne"};
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("massage", "nie podano wszystkich wymaganych pol, nalezy podac przynajmniej 2 odpowiedzi");
+                responseMap.put("massage", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
                 return ResponseEntity.status(500).body(responseMap);
             }
         }
         Long testID = Long.valueOf(JSON.get("testID").toString());
-        if(!(testRepository.findTestByTestID(testID).getUzytkownik().getUzytkownikID().equals(uzytkownikRepository.findUzytkownikByEmail(authentication.getName()).getUzytkownikID()))){
+        if(!(testRepository.findTestByTestID(testID).getUzytkownik().getUzytkownikID().equals(
+                uzytkownikRepository.findUzytkownikByEmail(authentication.getName()).getUzytkownikID()))){
             responseMap.put("error", true);
-            responseMap.put("message", "uzytkownik nie ma uprawnien do dodawania pytań do testu o id: "+testID);
+            responseMap.put("message", "Uzytkownik nie ma uprawnień do dodawania pytań do tego testu");
             return ResponseEntity.status(500).body(responseMap);
         }
         int poprawne = 0;
@@ -90,12 +91,104 @@ public class PytanieController {
         }
         if(poprawne == 0){
             responseMap.put("error", true);
-            responseMap.put("message", "co najmniej jedna odpowiedz musi byc poprawna");
+            responseMap.put("message", "Co najmniej jedna odpowiedź musi być poprawna");
             return ResponseEntity.status(500).body(responseMap);
         }
         pytanieRepository.save(nowePytanie);
         responseMap.put("error", false);
-        responseMap.put("massage", "Pomyslnie dodano pytanie");
+        responseMap.put("massage", "Pomyślnie dodano pytanie");
+        return ResponseEntity.ok(responseMap);
+    }
+
+    @GetMapping("/wyswietl_pytanie/{pytanieID}")
+    public ResponseEntity<?> wyswietlPytanie(@PathVariable("pytanieID") Long pytanieID){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
+                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
+        Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
+        return ResponseEntity.ok(pytanie);
+    }
+
+    @PutMapping("/edytuj_pytanie/{pytanieID}")
+    public ResponseEntity<?> edytujPytanie(@RequestBody HashMap<String, Object> JSON, @PathVariable("pytanieID") Long pytanieID){
+        Map<String, Object> responseMap = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
+                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
+        String [] parameters = {"tresc", "a", "aPoprawne", "b", "bPoprawne"};
+        for(String i : parameters) {
+            if (JSON.get(i) == null) {
+                responseMap.put("error", true);
+                responseMap.put("massage", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
+                return ResponseEntity.status(500).body(responseMap);
+            }
+        }
+        int poprawne = 0;
+        String tresc = JSON.get("tresc").toString();
+        String a = JSON.get("a").toString();
+        Boolean aPoprawne = Boolean.valueOf(JSON.get("aPoprawne").toString());
+        String b = JSON.get("b").toString();
+        Boolean bPoprawne = Boolean.valueOf(JSON.get("bPoprawne").toString());
+        Pytanie edytowanePytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
+        edytowanePytanie.setTresc(tresc);
+        edytowanePytanie.setA(a);
+        edytowanePytanie.setAPoprawne(aPoprawne);
+        edytowanePytanie.setB(b);
+        edytowanePytanie.setBPoprawne(bPoprawne);
+        if(aPoprawne == true) poprawne++;
+        if(bPoprawne == true) poprawne++;
+        if(JSON.get("c") != null){
+            edytowanePytanie.setC(JSON.get("c").toString());
+            edytowanePytanie.setCPoprawne(Boolean.valueOf(JSON.get("cPoprawne").toString()));
+            if(Boolean.valueOf(JSON.get("cPoprawne").toString()) == true) poprawne++;
+        }
+        if(JSON.get("d") != null){
+            edytowanePytanie.setD(JSON.get("d").toString());
+            edytowanePytanie.setDPoprawne(Boolean.valueOf(JSON.get("dPoprawne").toString()));
+            if(Boolean.valueOf(JSON.get("dPoprawne").toString()) == true) poprawne++;
+        }
+        if(JSON.get("e") != null){
+            edytowanePytanie.setE(JSON.get("e").toString());
+            edytowanePytanie.setEPoprawne(Boolean.valueOf(JSON.get("ePoprawne").toString()));
+            if(Boolean.valueOf(JSON.get("ePoprawne").toString()) == true) poprawne++;
+        }
+        if(JSON.get("f") != null){
+            edytowanePytanie.setF(JSON.get("f").toString());
+            edytowanePytanie.setFPoprawne(Boolean.valueOf(JSON.get("fPoprawne").toString()));
+            if(Boolean.valueOf(JSON.get("fPoprawne").toString()) == true) poprawne++;
+        }
+        if(poprawne == 0){
+            responseMap.put("error", true);
+            responseMap.put("message", "Co najmniej jedna odpowiedź musi byc poprawna");
+            return ResponseEntity.status(500).body(responseMap);
+        }
+        pytanieRepository.save(edytowanePytanie);
+        responseMap.put("error", false);
+        responseMap.put("message", "Pomyslnie edytowano pytanie");
+        return ResponseEntity.ok(responseMap);
+    }
+
+    @DeleteMapping("/usun_pytanie/{pytanieID}")
+    public ResponseEntity<?> usunPytanie(@PathVariable("pytanieID") Long pytanieID){
+        Map<String, Object> responseMap = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
+                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
+        pytanieRepository.delete(pytanieRepository.findPytanieByPytanieID(pytanieID));
+        responseMap.put("error", false);
+        responseMap.put("message", "Pomyślnie usunieto pytanie");
         return ResponseEntity.ok(responseMap);
     }
 }
