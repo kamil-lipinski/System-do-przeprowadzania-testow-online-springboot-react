@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import kamil.lipinski.testapp.appuser.AppUser;
-import kamil.lipinski.testapp.appuser.AppUserRepository;
+import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
+import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class AuthenticationController {
     protected final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UzytkownikRepository uzytkownikRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -37,10 +37,10 @@ public class AuthenticationController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody HashMap<String, Object> JSON) {
+    @PostMapping("/zaloguj")
+    public ResponseEntity<?> zaloguj(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
-        String [] parameters = {"email", "password"};
+        String [] parameters = {"email", "haslo"};
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
@@ -48,10 +48,9 @@ public class AuthenticationController {
                 ResponseEntity.status(500).body(responseMap);
             }
         String email = JSON.get("email").toString();
-        String password = JSON.get("password").toString();
+        String haslo = JSON.get("haslo").toString();
         try {
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email
-                    , password));
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, haslo));
             if (auth.isAuthenticated()) {
                 logger.info("Logged In");
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -82,31 +81,31 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody HashMap<String, Object> JSON) {
+    @PostMapping("/zarejestruj")
+    public ResponseEntity<?> zarejestruj(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
-        String [] parameters = {"name", "surname", "email", "password", "isTeacher"};
+        String [] parameters = {"imie", "nazwisko", "email", "haslo", "czyNauczyciel"};
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("massage", "nie podano wszystkich wymaganych pol");
                 ResponseEntity.status(500).body(responseMap);
             }
-        String name = JSON.get("name").toString();
-        String surname = JSON.get("surname").toString();
+        String imie = JSON.get("imie").toString();
+        String nazwisko = JSON.get("nazwisko").toString();
         String email = JSON.get("email").toString();
-        String password = JSON.get("password").toString();
-        Boolean isTeacher = Boolean.valueOf(JSON.get("isTeacher").toString());
+        String haslo = JSON.get("haslo").toString();
+        Boolean czyNauczyciel = Boolean.valueOf(JSON.get("czyNauczyciel").toString());
 
-        AppUser newUser = appUserRepository.findAppUserByEmail(email);
-        if(newUser != null) {
+        Uzytkownik nowyUzytkownik = uzytkownikRepository.findUzytkownikByEmail(email);
+        if(nowyUzytkownik != null) {
             responseMap.put("error", true);
             responseMap.put("message", "Uzytkownik o adresie email: "+email+" juz istnieje");
             return ResponseEntity.status(500).body(responseMap);
         }
 
-        newUser = new AppUser(name, surname, email, new BCryptPasswordEncoder().encode(password), isTeacher);
-        appUserRepository.save(newUser);
+        nowyUzytkownik = new Uzytkownik(imie, nazwisko, email, new BCryptPasswordEncoder().encode(haslo), czyNauczyciel);
+        uzytkownikRepository.save(nowyUzytkownik);
         responseMap.put("error", false);
         responseMap.put("message", "Konto zostalo utworzone pomyslnie");
         return ResponseEntity.ok(responseMap);

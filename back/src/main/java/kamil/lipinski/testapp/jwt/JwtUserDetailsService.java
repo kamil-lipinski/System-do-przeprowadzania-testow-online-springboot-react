@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import kamil.lipinski.testapp.appuser.AppUserRepository;
-import kamil.lipinski.testapp.appuser.AppUser;
+import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
+import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +18,13 @@ import java.util.List;
 public class JwtUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private AppUserRepository appUserRepository;
+    private UzytkownikRepository uzytkownikRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser u = appUserRepository.findAppUserByEmail(username);
+        Uzytkownik u = uzytkownikRepository.findUzytkownikByEmail(username);
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        return new User(u.getEmail(), u.getPassword(), authorityList);
+        return new User(u.getEmail(), u.getHaslo(), authorityList);
     }
 
 

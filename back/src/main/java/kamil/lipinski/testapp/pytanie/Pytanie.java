@@ -1,4 +1,4 @@
-package kamil.lipinski.testapp.question;
+package kamil.lipinski.testapp.pytanie;
 
 import kamil.lipinski.testapp.test.Test;
 
@@ -13,31 +13,31 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 
-public class Question {
+public class Pytanie {
     @Id
     @SequenceGenerator(
-            name = "questionIDSequence",
-            sequenceName = "questionIDSequence",
+            name = "pytanieIDSequence",
+            sequenceName = "pytanieIDSequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "questionIDSequence"
+            generator = "pytanieIDSequence"
     )
-    private Long questionID;
-    private String question;
+    private Long pytanieID;
+    private String tresc;
     private String a = "";
-    private Boolean aCorrect = false;
+    private Boolean aPoprawne = false;
     private String b = "";
-    private Boolean bCorrect = false;
+    private Boolean bPoprawne = false;
     private String c = "";
-    private Boolean cCorrect = false;
+    private Boolean cPoprawne = false;
     private String d = "";
-    private Boolean dCorrect = false;
+    private Boolean dPoprawne = false;
     private String e = "";
-    private Boolean eCorrect = false;
+    private Boolean ePoprawne = false;
     private String f = "";
-    private Boolean fCorrect = false;
+    private Boolean fPoprawne = false;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="testID")

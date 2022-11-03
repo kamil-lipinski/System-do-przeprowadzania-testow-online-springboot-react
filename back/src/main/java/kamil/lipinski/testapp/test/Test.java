@@ -1,6 +1,6 @@
 package kamil.lipinski.testapp.test;
 
-import kamil.lipinski.testapp.appuser.AppUser;
+import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,17 +24,17 @@ public class Test {
             generator = "testIDSequence"
     )
     private Long testID;
-    private String name;
-    private String accesCode;
+    private String nazwa;
+    private String kodDostepu;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="appUserID")
-    private AppUser appUser;
+    @JoinColumn(name="uzytkownikID")
+    private Uzytkownik uzytkownik;
 
-    public Test(AppUser appUser, String name, String accesCode){
-        this.appUser = appUser;
-        this.name = name;
-        this.accesCode = accesCode;
+    public Test(Uzytkownik uzytkownik, String nazwa, String kodDostepu){
+        this.uzytkownik = uzytkownik;
+        this.nazwa = nazwa;
+        this.kodDostepu = kodDostepu;
     }
 
 }
