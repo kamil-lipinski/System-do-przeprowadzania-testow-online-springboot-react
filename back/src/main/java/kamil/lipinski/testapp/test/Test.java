@@ -26,14 +26,16 @@ public class Test {
     private Long testID;
     private String nazwa;
     private String kodDostepu;
+    private int iloscPytan;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
     private Uzytkownik uzytkownik;
 
-    public Test(Uzytkownik uzytkownik, String nazwa, String kodDostepu){
+    public Test(Uzytkownik uzytkownik, String nazwa, int iloscPytan, String kodDostepu){
         this.uzytkownik = uzytkownik;
         this.nazwa = nazwa;
+        this.iloscPytan = iloscPytan;
         this.kodDostepu = kodDostepu;
     }
 

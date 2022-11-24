@@ -36,9 +36,8 @@ public class Wynik {
     @JoinColumn(name="testID")
     private Test test;
 
-    public Wynik(Uzytkownik uzytkownik, Test test, int wynik){
+    public Wynik(Uzytkownik uzytkownik, Test test){
         this.uzytkownik = uzytkownik;
         this.test = test;
-        this.wynik = wynik;
     }
 }

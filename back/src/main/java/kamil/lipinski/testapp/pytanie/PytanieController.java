@@ -100,27 +100,31 @@ public class PytanieController {
         return ResponseEntity.ok(responseMap);
     }
 
-    @GetMapping("/wyswietl_pytanie/{pytanieID}")
-    public ResponseEntity<?> wyswietlPytanie(@PathVariable("pytanieID") Long pytanieID){
+    @GetMapping("/wyswietl_pytanie/")
+    public ResponseEntity<?> wyswietlPytanie(@RequestParam(required = false) Long pytanieID){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
         if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
-                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
         Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
         return ResponseEntity.ok(pytanie);
     }
 
-    @PutMapping("/edytuj_pytanie/{pytanieID}")
-    public ResponseEntity<?> edytujPytanie(@RequestBody HashMap<String, Object> JSON, @PathVariable("pytanieID") Long pytanieID){
+    @PutMapping("/edytuj_pytanie/")
+    public ResponseEntity<?> edytujPytanie(@RequestBody HashMap<String, Object> JSON, @RequestParam(required = false) Long pytanieID){
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
         if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
-                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
         String [] parameters = {"tresc", "a", "aPoprawne", "b", "bPoprawne"};
@@ -176,14 +180,16 @@ public class PytanieController {
         return ResponseEntity.ok(responseMap);
     }
 
-    @DeleteMapping("/usun_pytanie/{pytanieID}")
-    public ResponseEntity<?> usunPytanie(@PathVariable("pytanieID") Long pytanieID){
+    @DeleteMapping("/usun_pytanie/")
+    public ResponseEntity<?> usunPytanie(@RequestParam(required = false) Long pytanieID){
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+            return ResponseEntity.notFound().build();
+        }
         if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID())) ||
-                pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
         pytanieRepository.delete(pytanieRepository.findPytanieByPytanieID(pytanieID));

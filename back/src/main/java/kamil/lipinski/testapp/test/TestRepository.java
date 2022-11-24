@@ -9,5 +9,5 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     Test findTestByTestID(@Param("testID") Long testID);
 
     @Query(value = "SELECT * FROM test t WHERE t.kod_dostepu =:kodDostepu", nativeQuery = true)
-    Test findTestByKodDostepu(@Param("kodDostepu") String accesCode);
+    Test findTestByKodDostepu(@Param("kodDostepu") String kodDostepu);
 }

@@ -24,7 +24,13 @@ public class Odpowiedz {
             generator = "odpowiedzIDSequence"
     )
     private Long odpowiedzID;
-    private String odpowiedz;
+    private int numerPytania;
+    private Boolean a;
+    private Boolean b;
+    private Boolean c;
+    private Boolean d;
+    private Boolean e;
+    private Boolean f;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
@@ -34,10 +40,10 @@ public class Odpowiedz {
     @JoinColumn(name="pytanieID")
     private Pytanie pytanie;
 
-    public Odpowiedz(Uzytkownik uzytkownik, Pytanie pytanie, String odpowiedz){
+    public Odpowiedz(Uzytkownik uzytkownik, Pytanie pytanie, int numerPytania){
         this.uzytkownik = uzytkownik;
         this.pytanie = pytanie;
-        this.odpowiedz = odpowiedz;
+        this.numerPytania = numerPytania;
     }
 
 }
