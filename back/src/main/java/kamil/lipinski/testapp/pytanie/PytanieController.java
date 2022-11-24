@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
-import kamil.lipinski.testapp.test.*;
+import kamil.lipinski.testapp.pula.*;
 import kamil.lipinski.testapp.uzytkownik.*;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class PytanieController {
     private UzytkownikRepository uzytkownikRepository;
 
     @Autowired
-    private TestRepository testRepository;
+    private PulaRepository pulaRepository;
 
     @Autowired
     private PytanieRepository pytanieRepository;
@@ -34,12 +34,13 @@ public class PytanieController {
     public ResponseEntity<?> stworzPytanie(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(!(uzytkownikRepository.findUzytkownikByEmail(authentication.getName()).isCzyNauczyciel())){
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
             responseMap.put("message", "Użytkownik nie ma uprawnień do dodawania pytań");
             return ResponseEntity.status(500).body(responseMap);
         }
-        String [] parameters = {"testID", "tresc", "a", "aPoprawne", "b", "bPoprawne"};
+        String [] parameters = {"pulaID", "tresc", "a", "aPoprawne", "b", "bPoprawne"};
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
@@ -47,9 +48,9 @@ public class PytanieController {
                 return ResponseEntity.status(500).body(responseMap);
             }
         }
-        Long testID = Long.valueOf(JSON.get("testID").toString());
-        if(!(testRepository.findTestByTestID(testID).getUzytkownik().getUzytkownikID().equals(
-                uzytkownikRepository.findUzytkownikByEmail(authentication.getName()).getUzytkownikID()))){
+        Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
+        if(!(pulaRepository.findPulaByPulaID(pulaID).getUzytkownik().getUzytkownikID().equals(
+                uzytkownik.getUzytkownikID()))){
             responseMap.put("error", true);
             responseMap.put("message", "Uzytkownik nie ma uprawnień do dodawania pytań do tego testu");
             return ResponseEntity.status(500).body(responseMap);
@@ -61,7 +62,7 @@ public class PytanieController {
         String b = JSON.get("b").toString();
         Boolean bPoprawne = Boolean.valueOf(JSON.get("bPoprawne").toString());
         Pytanie nowePytanie = new Pytanie();
-        nowePytanie.setTest(testRepository.findTestByTestID(testID));
+        nowePytanie.setPula(pulaRepository.findPulaByPulaID(pulaID));
         nowePytanie.setTresc(tresc);
         nowePytanie.setA(a);
         nowePytanie.setAPoprawne(aPoprawne);
@@ -107,7 +108,7 @@ public class PytanieController {
         if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
                 .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
@@ -123,7 +124,7 @@ public class PytanieController {
         if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
                 .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
@@ -188,7 +189,7 @@ public class PytanieController {
         if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getTest().getUzytkownik()
+        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
                 .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }

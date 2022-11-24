@@ -1,6 +1,5 @@
-package kamil.lipinski.testapp.wynik;
+package kamil.lipinski.testapp.pula;
 
-import kamil.lipinski.testapp.test.Test;
 import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 
 import lombok.Getter;
@@ -13,31 +12,27 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Wynik {
+public class Pula {
     @Id
     @SequenceGenerator(
-            name = "wynikIDSequence",
-            sequenceName = "wynikIDSequence",
+            name = "pulaIDSequence",
+            sequenceName = "pulaIDSequence",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "wynikIDSequence"
+            generator = "pulaIDSequence"
     )
-    private Long wynikID;
-    private int wynik;
-    private Boolean czyUkonczono = false;
+    private Long pulaID;
+    private String nazwa;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
     private Uzytkownik uzytkownik;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name="testID")
-    private Test test;
-
-    public Wynik(Uzytkownik uzytkownik, Test test){
+    public Pula(Uzytkownik uzytkownik, String nazwa){
         this.uzytkownik = uzytkownik;
-        this.test = test;
+        this.nazwa = nazwa;
     }
+
 }

@@ -1,5 +1,6 @@
 package kamil.lipinski.testapp.uzytkownik;
 
+import kamil.lipinski.testapp.test.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
-import kamil.lipinski.testapp.test.*;
+import kamil.lipinski.testapp.pula.*;
 import kamil.lipinski.testapp.pytanie.*;
 import kamil.lipinski.testapp.odpowiedz.*;
 import kamil.lipinski.testapp.wynik.*;
@@ -25,7 +26,7 @@ public class UzytkownikController {
     private UzytkownikRepository uzytkownikRepository;
 
     @Autowired
-    private TestRepository testRepository;
+    private PulaRepository pulaRepository;
 
     @Autowired
     private PytanieRepository pytanieRepository;
@@ -37,12 +38,16 @@ public class UzytkownikController {
     private WynikRepository wynikRepository;
 
     @Autowired
+    private TestRepository testRepository;
+
+    @Autowired
     private JwtUserDetailsService userDetailsService;
 
     @PostMapping("/zapisz_sie_na_test")
     public ResponseEntity<?> zapiszSieNaTest(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         if (JSON.get("kodDostepu") == null) {
             responseMap.put("error", true);
             responseMap.put("massage", "Nie podano kodu dostępu");
@@ -54,15 +59,15 @@ public class UzytkownikController {
             responseMap.put("massage", "Kod dostępu niepoprawny");
             return ResponseEntity.status(500).body(responseMap);
         }
-        Wynik nowyWynik = new Wynik(uzytkownikRepository.findUzytkownikByEmail(authentication.getName()), testRepository.findTestByKodDostepu(kodDostepu));
+        Wynik nowyWynik = new Wynik(uzytkownik, testRepository.findTestByKodDostepu(kodDostepu));
         wynikRepository.save(nowyWynik);
         int iloscPytan = testRepository.findTestByKodDostepu(kodDostepu).getIloscPytan();
         int numerPytania = 1;
-        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByTestID(testRepository.findTestByKodDostepu(kodDostepu).getTestID());
+        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByKodDostepu(kodDostepu).getPula().getPulaID());
         while (iloscPytan != 0){
             Random rand = new Random();
             int n = rand.nextInt(pytania.size());
-            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownikRepository.findUzytkownikByEmail(authentication.getName()),pytania.get(n),numerPytania);
+            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownik,pytania.get(n),numerPytania);
             odpowiedzRepository.save(nowaOdpowiedz);
             pytania.remove(n);
             numerPytania++;

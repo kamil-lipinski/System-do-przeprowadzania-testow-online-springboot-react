@@ -1,6 +1,6 @@
 package kamil.lipinski.testapp.pytanie;
 
-import kamil.lipinski.testapp.test.Test;
+import kamil.lipinski.testapp.pula.Pula;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +40,7 @@ public class Pytanie {
     private Boolean fPoprawne = false;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name="testID")
-    private Test test;
+    @JoinColumn(name="pulaID")
+    private Pula pula;
 
 }

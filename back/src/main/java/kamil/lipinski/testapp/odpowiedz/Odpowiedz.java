@@ -25,12 +25,12 @@ public class Odpowiedz {
     )
     private Long odpowiedzID;
     private int numerPytania;
-    private Boolean a;
-    private Boolean b;
-    private Boolean c;
-    private Boolean d;
-    private Boolean e;
-    private Boolean f;
+    private Boolean a = false;
+    private Boolean b = false;
+    private Boolean c = false;
+    private Boolean d = false;
+    private Boolean e = false;
+    private Boolean f = false;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")
