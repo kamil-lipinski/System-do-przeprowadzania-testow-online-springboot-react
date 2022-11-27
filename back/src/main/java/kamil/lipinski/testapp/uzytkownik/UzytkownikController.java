@@ -1,6 +1,7 @@
 package kamil.lipinski.testapp.uzytkownik;
 
 import kamil.lipinski.testapp.test.TestRepository;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,38 +44,5 @@ public class UzytkownikController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @PostMapping("/zapisz_sie_na_test")
-    public ResponseEntity<?> zapiszSieNaTest(@RequestBody HashMap<String, Object> JSON) {
-        Map<String, Object> responseMap = new HashMap<>();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        if (JSON.get("kodDostepu") == null) {
-            responseMap.put("error", true);
-            responseMap.put("massage", "Nie podano kodu dostępu");
-            return ResponseEntity.status(500).body(responseMap);
-        }
-        String kodDostepu = JSON.get("kodDostepu").toString();
-        if(testRepository.findTestByKodDostepu(kodDostepu) == null){
-            responseMap.put("error", true);
-            responseMap.put("massage", "Kod dostępu niepoprawny");
-            return ResponseEntity.status(500).body(responseMap);
-        }
-        Wynik nowyWynik = new Wynik(uzytkownik, testRepository.findTestByKodDostepu(kodDostepu));
-        wynikRepository.save(nowyWynik);
-        int iloscPytan = testRepository.findTestByKodDostepu(kodDostepu).getIloscPytan();
-        int numerPytania = 1;
-        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByKodDostepu(kodDostepu).getPula().getPulaID());
-        while (iloscPytan != 0){
-            Random rand = new Random();
-            int n = rand.nextInt(pytania.size());
-            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownik,pytania.get(n),numerPytania);
-            odpowiedzRepository.save(nowaOdpowiedz);
-            pytania.remove(n);
-            numerPytania++;
-            iloscPytan--;
-        }
-        responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie zapisano na test");
-        return ResponseEntity.ok(responseMap);
-    }
+
 }

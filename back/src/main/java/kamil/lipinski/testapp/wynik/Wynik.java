@@ -26,7 +26,6 @@ public class Wynik {
     )
     private Long wynikID;
     private int wynik;
-    private Boolean czyUkonczono = false;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")

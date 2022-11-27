@@ -44,7 +44,7 @@ public class PytanieController {
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("massage", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
+                responseMap.put("message", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
                 return ResponseEntity.status(500).body(responseMap);
             }
         }
@@ -97,12 +97,12 @@ public class PytanieController {
         }
         pytanieRepository.save(nowePytanie);
         responseMap.put("error", false);
-        responseMap.put("massage", "Pomyślnie dodano pytanie");
+        responseMap.put("message", "Pomyślnie dodano pytanie");
         return ResponseEntity.ok(responseMap);
     }
 
     @GetMapping("/wyswietl_pytanie/")
-    public ResponseEntity<?> wyswietlPytanie(@RequestParam(required = false) Long pytanieID){
+    public ResponseEntity<?> wyswietlPytanie(@RequestParam Long pytanieID){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
@@ -117,7 +117,7 @@ public class PytanieController {
     }
 
     @PutMapping("/edytuj_pytanie/")
-    public ResponseEntity<?> edytujPytanie(@RequestBody HashMap<String, Object> JSON, @RequestParam(required = false) Long pytanieID){
+    public ResponseEntity<?> edytujPytanie(@RequestBody HashMap<String, Object> JSON, @RequestParam Long pytanieID){
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
@@ -132,7 +132,7 @@ public class PytanieController {
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("massage", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
+                responseMap.put("message", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
                 return ResponseEntity.status(500).body(responseMap);
             }
         }
@@ -182,7 +182,7 @@ public class PytanieController {
     }
 
     @DeleteMapping("/usun_pytanie/")
-    public ResponseEntity<?> usunPytanie(@RequestParam(required = false) Long pytanieID){
+    public ResponseEntity<?> usunPytanie(@RequestParam Long pytanieID){
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());

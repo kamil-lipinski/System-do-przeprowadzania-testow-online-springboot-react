@@ -23,17 +23,20 @@ public class Test {
             generator = "testIDSequence"
     )
     private Long testID;
+    private String nazwa;
     private String data;
     private int czas;
     private int iloscPytan;
     private String kodDostepu;
+    private Boolean czyZakonczony = false;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pulaID")
     private Pula pula;
 
-    public Test(Pula pula, String data, int czas, int iloscPytan, String kodDostepu){
+    public Test(Pula pula, String nazwa, String data, int czas, int iloscPytan, String kodDostepu){
         this.pula = pula;
+        this.nazwa = nazwa;
         this.data = data;
         this.czas = czas;
         this.iloscPytan = iloscPytan;
