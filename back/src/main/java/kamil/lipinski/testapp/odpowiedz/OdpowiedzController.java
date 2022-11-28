@@ -48,9 +48,18 @@ public class OdpowiedzController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         Odpowiedz nowaOdpowiedz = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(pytanieID, uzytkownik.getUzytkownikID());
-        if(testRepository.findTestByTestID(testRepository.findTestByPulaID(pytanieRepository.findPytanieByPytanieID(pytanieID).getPula().getPulaID()).get(0).getTestID()).getCzyZakonczony()){
+        if(testRepository.findTestByTestID(testRepository.findTestByPulaID(
+                pytanieRepository.findPytanieByPytanieID(pytanieID).getPula().getPulaID())
+                .get(0).getTestID()).getStatus().equals("zakonczony")){
             responseMap.put("error", true);
             responseMap.put("message", "Test został już zakonczony");
+            return ResponseEntity.status(500).body(responseMap);
+        }
+        if(testRepository.findTestByTestID(testRepository.findTestByPulaID(
+                        pytanieRepository.findPytanieByPytanieID(pytanieID).getPula().getPulaID())
+                .get(0).getTestID()).getStatus().equals("zaplanowany")){
+            responseMap.put("error", true);
+            responseMap.put("message", "Test jeszcze się nie rozpoczał");
             return ResponseEntity.status(500).body(responseMap);
         }
         if(JSON.get("a") != null){

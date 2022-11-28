@@ -28,7 +28,7 @@ public class Test {
     private int czas;
     private int iloscPytan;
     private String kodDostepu;
-    private Boolean czyZakonczony = false;
+    private String status = "zaplanowany";
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pulaID")

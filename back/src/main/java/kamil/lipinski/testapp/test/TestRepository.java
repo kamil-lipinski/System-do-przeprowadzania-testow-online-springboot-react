@@ -16,9 +16,7 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     @Query(value = "SELECT * FROM test t WHERE t.pulaid =:pulaID", nativeQuery = true)
     ArrayList<Test> findTestByPulaID(@Param("pulaID") Long pulaID);
 
-    @Query(value = "SELECT * FROM test t WHERE t.czy_zakonczony = false", nativeQuery = true)
-    ArrayList<Test> findTestNieZakonczony();
+    @Query(value = "SELECT * FROM test t WHERE t.status =:status", nativeQuery = true)
+    ArrayList<Test> findTestByStatus(@Param("status") String status);
 
-    @Query(value = "SELECT * FROM test t WHERE t.czy_zakonczony = true", nativeQuery = true)
-    ArrayList<Test> findTestZakonczony();
 }

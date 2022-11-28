@@ -3,7 +3,6 @@ package kamil.lipinski.testapp.test;
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.odpowiedz.Odpowiedz;
 import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
-import kamil.lipinski.testapp.pula.Pula;
 import kamil.lipinski.testapp.pula.PulaRepository;
 import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.pytanie.PytanieRepository;
@@ -21,10 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/test")
@@ -51,6 +47,47 @@ public class TestController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
+    public void scheduledZakonczTest(){
+        ArrayList<Test> testy = testRepository.findTestByStatus("zaplanowany");
+        ArrayList<Test> testyTrwajace = testRepository.findTestByStatus("trwa");
+        testy.addAll(testyTrwajace);
+        for(Test t : testy){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String data = t.getData();
+            LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
+            LocalDateTime dataZakonczeniaTestu = dataTestu.plusMinutes(t.getCzas());
+            LocalDateTime dataTeraz= LocalDateTime.now();
+            if(dataTeraz.isAfter(dataTestu) && dataTeraz.isBefore(dataZakonczeniaTestu)){
+                t.setStatus("trwa");
+                t.setKodDostepu("EXPIRED");
+                testRepository.save(t);
+            }
+            else if(dataTeraz.isAfter(dataZakonczeniaTestu)){
+                ArrayList <Wynik> wyniki = wynikRepository.findWynikByTestID(t.getTestID());
+                for(Wynik w: wyniki){
+                    int punkty = 0;
+                    ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(t.getTestID()).getPula().getPulaID());
+                    for(Pytanie p : pytania){
+                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(p.getPytanieID(),w.getUzytkownik().getUzytkownikID());
+                        if(odp != null){
+                            if(odp.getA().equals(p.getAPoprawne()) &&
+                                    odp.getB().equals(p.getBPoprawne()) &&
+                                    odp.getC().equals(p.getCPoprawne()) &&
+                                    odp.getD().equals(p.getDPoprawne()) &&
+                                    odp.getE().equals(p.getEPoprawne()) &&
+                                    odp.getF().equals(p.getFPoprawne()))punkty++;
+                        }
+                    }
+                    w.setWynik(punkty);
+                    wynikRepository.save(w);
+                }
+                t.setStatus("zakonczony");
+                testRepository.save(t);
+            }
+        }
+    }
+
     @PostMapping("/zaplanuj_test")
     public ResponseEntity<?> zaplanujTest(@RequestBody HashMap<String, Object> JSON){
         Map<String, Object> responseMap = new HashMap<>();
@@ -69,9 +106,17 @@ public class TestController {
                 return ResponseEntity.status(500).body(responseMap);
             }
         }
+        String data = JSON.get("data").toString();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+//        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
+//        LocalDateTime dataTeraz= LocalDateTime.now();
+//        if(dataTestu.isBefore(dataTeraz.plusDays(1))){
+//            responseMap.put("error", true);
+//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 24h przed wyznaczona data");
+//            return ResponseEntity.status(500).body(responseMap);
+//        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
         String nazwa = JSON.get("nazwa").toString();
-        String data = JSON.get("data").toString();
         int czas = Integer.valueOf(JSON.get("czas").toString());
         int iloscPytan = Integer.valueOf(JSON.get("iloscPytan").toString());
         String kodDostepu = RandomStringUtils.randomAlphanumeric(5);
@@ -98,7 +143,7 @@ public class TestController {
         String kodDostepu = JSON.get("kodDostepu").toString();
         if(testRepository.findTestByKodDostepu(kodDostepu) == null || kodDostepu == "EXPIRED"){
             responseMap.put("error", true);
-            responseMap.put("message", "Kod dostępu niepoprawny");
+            responseMap.put("message", "Kod dostępu wygasł lub jest niepoprawny");
             return ResponseEntity.status(500).body(responseMap);
         }
         if(wynikRepository.findWynikByTestIDAndUzytkownikID(
@@ -134,8 +179,7 @@ public class TestController {
         if(testRepository.findTestByTestID(testID) == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID()).getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
+        if(wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID()) == null){
             return ResponseEntity.notFound().build();
         }
         int punkty = 0;
@@ -154,7 +198,7 @@ public class TestController {
         Wynik nowyWynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
         nowyWynik.setWynik(punkty);
         Test nowytest = testRepository.findTestByTestID(testID);
-        nowytest.setCzyZakonczony(true);
+        nowytest.setStatus("zakonczony");
         wynikRepository.save(nowyWynik);
         testRepository.save(nowytest);
         int max = testRepository.findTestByTestID(testID).getIloscPytan();
@@ -164,38 +208,74 @@ public class TestController {
         return ResponseEntity.ok(responseMap);
     }
 
-    @Scheduled(fixedDelay = 1000, initialDelay = 1000)
-    public void scheduledZakonczTest(){
-        ArrayList<Test> testy = testRepository.findTestNieZakonczony();
-        for(Test t : testy){
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            String data = t.getData();
-            LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
-            LocalDateTime dataZakonczeniaTestu = dataTestu.plusMinutes(t.getCzas());
-            LocalDateTime dateTeraz= LocalDateTime.now();
-            if(dateTeraz.isAfter(dataZakonczeniaTestu)){
-                ArrayList <Wynik> wyniki = wynikRepository.findWynikByTestID(t.getTestID());
-                for(Wynik w: wyniki){
-                    int punkty = 0;
-                    ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(t.getTestID()).getPula().getPulaID());
-                    for(Pytanie p : pytania){
-                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(p.getPytanieID(),w.getUzytkownik().getUzytkownikID());
-                        if(odp != null){
-                            if(odp.getA().equals(p.getAPoprawne()) &&
-                                    odp.getB().equals(p.getBPoprawne()) &&
-                                    odp.getC().equals(p.getCPoprawne()) &&
-                                    odp.getD().equals(p.getDPoprawne()) &&
-                                    odp.getE().equals(p.getEPoprawne()) &&
-                                    odp.getF().equals(p.getFPoprawne()))punkty++;
-                        }
-                    }
-                    w.setWynik(punkty);
-                    wynikRepository.save(w);
-                }
-            }
-            t.setCzyZakonczony(true);
-            t.setKodDostepu("EXPIRED");
-            testRepository.save(t);
+    @GetMapping("/test_czas/")
+    public ResponseEntity<?> testCzas(@RequestParam Long testID){
+        Map<String, Object> responseMap = new HashMap<>();
+        if(testRepository.findTestByTestID(testID) == null){
+            return ResponseEntity.notFound().build();
         }
+        Test test = testRepository.findTestByTestID(testID);
+        String data = test.getData();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
+        Date dataTestu2 = java.sql.Timestamp.valueOf(dataTestu);
+        LocalDateTime dataZakonczeniaTestu = dataTestu.plusMinutes(test.getCzas());
+        Date dataZakonczeniaTestu2 = java.sql.Timestamp.valueOf(dataZakonczeniaTestu);
+        LocalDateTime dataTeraz = LocalDateTime.now();
+        Date dataTeraz2 = java.sql.Timestamp.valueOf(dataTeraz);
+        if(test.getStatus().equals("zaplanowany")){
+            long roznica = dataTestu2.getTime() - dataTeraz2.getTime();
+            long roznicaSekundy = (roznica / 1000) % 60;
+            String roznicaSekundy2 = roznicaSekundy+"";
+            if(String.valueOf(roznicaSekundy).length() == 1){
+                roznicaSekundy2 = "0"+roznicaSekundy;
+            }
+
+            long roznicaMinuty = (roznica / (1000 * 60)) % 60;
+            String roznicaMinuty2 = roznicaMinuty+"";
+            if(String.valueOf(roznicaMinuty).length() == 1){
+                roznicaMinuty2 = "0"+roznicaMinuty;
+            }
+
+            long roznicaGodziny = (roznica / (1000 * 60 * 60)) % 24;
+            String roznicaGodziny2 = roznicaGodziny+"";
+            if(String.valueOf(roznicaGodziny).length() == 1){
+                roznicaGodziny2 = "0"+roznicaGodziny;
+            }
+
+            long roznicaDni = (roznica / (1000 * 60 * 60 * 24)) % 365;
+            String czas = roznicaDni +":" +roznicaGodziny2 +":" +roznicaMinuty2 +":" +roznicaSekundy2;
+            responseMap.put("error", false);
+            responseMap.put("czas", czas);
+            return ResponseEntity.ok(responseMap);
+        }
+        else if(test.getStatus().equals("trwa")){
+            long roznica = dataZakonczeniaTestu2.getTime() - dataTeraz2.getTime();
+            long roznicaSekundy = (roznica / 1000) % 60;
+            String roznicaSekundy2 = roznicaSekundy+"";
+            if(String.valueOf(roznicaSekundy).length() == 1){
+                roznicaSekundy2 = "0"+roznicaSekundy;
+            }
+
+            long roznicaMinuty = (roznica / (1000 * 60)) % 60;
+            String roznicaMinuty2 = roznicaMinuty+"";
+            if(String.valueOf(roznicaMinuty).length() == 1){
+                roznicaMinuty2 = "0"+roznicaMinuty;
+            }
+
+            long roznicaGodziny = (roznica / (1000 * 60 * 60)) % 24;
+            String roznicaGodziny2 = roznicaGodziny+"";
+            if(String.valueOf(roznicaGodziny).length() == 1){
+                roznicaGodziny2 = "0"+roznicaGodziny;
+            }
+
+            String czas = roznicaGodziny2 +":" +roznicaMinuty2 +":" +roznicaSekundy2;
+            responseMap.put("error", false);
+            responseMap.put("czas", czas);
+            return ResponseEntity.ok(responseMap);
+        }
+        responseMap.put("error", true);
+        responseMap.put("message", "Test już się zakonczył");
+        return ResponseEntity.status(500).body(responseMap);
     }
 }
