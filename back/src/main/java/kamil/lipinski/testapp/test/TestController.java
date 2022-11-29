@@ -69,7 +69,7 @@ public class TestController {
                     int punkty = 0;
                     ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(t.getTestID()).getPula().getPulaID());
                     for(Pytanie p : pytania){
-                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(p.getPytanieID(),w.getUzytkownik().getUzytkownikID());
+                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),w.getUzytkownik().getUzytkownikID(),w.getWynikID());
                         if(odp != null){
                             if(odp.getA().equals(p.getAPoprawne()) &&
                                     odp.getB().equals(p.getBPoprawne()) &&
@@ -160,7 +160,7 @@ public class TestController {
         while (iloscPytan != 0){
             Random rand = new Random();
             int n = rand.nextInt(pytania.size());
-            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownik,pytania.get(n),numerPytania);
+            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownik,pytania.get(n),nowyWynik,numerPytania);
             odpowiedzRepository.save(nowaOdpowiedz);
             pytania.remove(n);
             numerPytania++;
@@ -176,16 +176,17 @@ public class TestController {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
         if(testRepository.findTestByTestID(testID) == null){
             return ResponseEntity.notFound().build();
         }
-        if(wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID()) == null){
+        if(wynik == null){
             return ResponseEntity.notFound().build();
         }
         int punkty = 0;
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(testID).getPula().getPulaID());
         for(Pytanie p : pytania){
-            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(p.getPytanieID(),uzytkownik.getUzytkownikID());
+            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),uzytkownik.getUzytkownikID(),wynik.getWynikID());
             if(odp != null){
                 if(odp.getA().equals(p.getAPoprawne()) &&
                         odp.getB().equals(p.getBPoprawne()) &&
@@ -195,18 +196,41 @@ public class TestController {
                         odp.getF().equals(p.getFPoprawne()))punkty++;
             }
         }
-        Wynik nowyWynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
-        nowyWynik.setWynik(punkty);
-        Test nowytest = testRepository.findTestByTestID(testID);
-        nowytest.setStatus("zakonczony");
-        wynikRepository.save(nowyWynik);
-        testRepository.save(nowytest);
+        wynik.setWynik(punkty);
+        wynikRepository.save(wynik);
         int max = testRepository.findTestByTestID(testID).getIloscPytan();
         responseMap.put("error", false);
         responseMap.put("message", "Zakonczono test. Wynik testu: " +punkty +"/" +max);
         responseMap.put("wynik", punkty);
         return ResponseEntity.ok(responseMap);
     }
+
+//    @GetMapping("/wyswietl_pytania_do_testu/")
+//    public ResponseEntity<?> wyswietlPytania(@RequestParam Long testID){
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+//        Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
+//        if(testRepository.findTestByTestID(testID) == null){
+//            return ResponseEntity.notFound().build();
+//        }
+//        if(wynik == null){
+//            return ResponseEntity.notFound().build();
+//        }
+//        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(testID).getPula().getPulaID());
+//        ArrayList<Pytanie> pytania2 = pytania;
+//        for(Pytanie p : pytania){
+//            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),uzytkownik.getUzytkownikID(),wynik.getWynikID());
+//            if(odp == null){
+//                pytania.remove(p);
+//                pytania2.remove(p);
+//            }
+//            else
+//            {
+//                pytania2.set(odp.getNumerPytania()-1,p);
+//            }
+//        }
+//        return ResponseEntity.ok(pytania2);
+//    }
 
     @GetMapping("/test_czas/")
     public ResponseEntity<?> testCzas(@RequestParam Long testID){

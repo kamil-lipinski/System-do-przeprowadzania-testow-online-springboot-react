@@ -10,6 +10,6 @@ public interface OdpowiedzRepository extends JpaRepository<Odpowiedz, Long>{
     @Query(value = "SELECT * FROM odpowiedz o WHERE o.pytanieid =:pytanieID", nativeQuery = true)
     ArrayList<Odpowiedz> findOdpowiedzByPytanieID(@Param("pytanieID") Long pytanieID);
 
-    @Query(value = "SELECT * FROM odpowiedz o WHERE o.pytanieid =:pytanieID AND o.uzytkownikid =:uzytkownikID", nativeQuery = true)
-    Odpowiedz findOdpowiedzByPytanieIDAndUzytkownikID(@Param("pytanieID") Long pytanieID, @Param("uzytkownikID") Long uzytkownikID);
+    @Query(value = "SELECT * FROM odpowiedz o WHERE o.pytanieid =:pytanieID AND o.uzytkownikid =:uzytkownikID AND o.wynikid =:wynikID", nativeQuery = true)
+    Odpowiedz findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(@Param("pytanieID") Long pytanieID, @Param("uzytkownikID") Long uzytkownikID, @Param("wynikID") Long wynikID);
 }

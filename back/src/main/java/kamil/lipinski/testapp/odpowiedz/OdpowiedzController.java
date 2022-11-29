@@ -6,6 +6,7 @@ import kamil.lipinski.testapp.pytanie.PytanieRepository;
 import kamil.lipinski.testapp.test.TestRepository;
 import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
+import kamil.lipinski.testapp.wynik.Wynik;
 import kamil.lipinski.testapp.wynik.WynikRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,21 +43,18 @@ public class OdpowiedzController {
     private JwtUserDetailsService userDetailsService;
 
     @PutMapping("/odpowiedz_na_pytanie/")
-    public ResponseEntity<?> odpowiedzNaPytanie(@RequestBody HashMap<String, Object> JSON, @RequestParam Long pytanieID) {
+    public ResponseEntity<?> odpowiedzNaPytanie(@RequestBody HashMap<String, Object> JSON, @RequestParam Long pytanieID, @RequestParam Long testID) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        Odpowiedz nowaOdpowiedz = odpowiedzRepository.findOdpowiedzByPytanieIDAndUzytkownikID(pytanieID, uzytkownik.getUzytkownikID());
-        if(testRepository.findTestByTestID(testRepository.findTestByPulaID(
-                pytanieRepository.findPytanieByPytanieID(pytanieID).getPula().getPulaID())
-                .get(0).getTestID()).getStatus().equals("zakonczony")){
+        Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
+        Odpowiedz nowaOdpowiedz = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(pytanieID, uzytkownik.getUzytkownikID(),wynik.getWynikID());
+        if(testRepository.findTestByTestID(testID).getStatus().equals("zakonczony")){
             responseMap.put("error", true);
             responseMap.put("message", "Test został już zakonczony");
             return ResponseEntity.status(500).body(responseMap);
         }
-        if(testRepository.findTestByTestID(testRepository.findTestByPulaID(
-                        pytanieRepository.findPytanieByPytanieID(pytanieID).getPula().getPulaID())
-                .get(0).getTestID()).getStatus().equals("zaplanowany")){
+        if(testRepository.findTestByTestID(testID).getStatus().equals("zaplanowany")){
             responseMap.put("error", true);
             responseMap.put("message", "Test jeszcze się nie rozpoczał");
             return ResponseEntity.status(500).body(responseMap);
