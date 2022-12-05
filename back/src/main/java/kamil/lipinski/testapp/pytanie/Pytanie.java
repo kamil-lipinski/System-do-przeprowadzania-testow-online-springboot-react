@@ -26,17 +26,17 @@ public class Pytanie {
     )
     private Long pytanieID;
     private String tresc;
-    private String a = "";
+    private String a;
     private Boolean aPoprawne = false;
-    private String b = "";
+    private String b;
     private Boolean bPoprawne = false;
-    private String c = "";
+    private String c;
     private Boolean cPoprawne = false;
-    private String d = "";
+    private String d;
     private Boolean dPoprawne = false;
-    private String e = "";
+    private String e;
     private Boolean ePoprawne = false;
-    private String f = "";
+    private String f;
     private Boolean fPoprawne = false;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

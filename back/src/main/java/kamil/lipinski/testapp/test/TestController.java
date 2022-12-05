@@ -205,32 +205,32 @@ public class TestController {
         return ResponseEntity.ok(responseMap);
     }
 
-//    @GetMapping("/wyswietl_pytania_do_testu/")
-//    public ResponseEntity<?> wyswietlPytania(@RequestParam Long testID){
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-//        Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
-//        if(testRepository.findTestByTestID(testID) == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        if(wynik == null){
-//            return ResponseEntity.notFound().build();
-//        }
-//        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(testID).getPula().getPulaID());
-//        ArrayList<Pytanie> pytania2 = pytania;
-//        for(Pytanie p : pytania){
-//            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),uzytkownik.getUzytkownikID(),wynik.getWynikID());
-//            if(odp == null){
-//                pytania.remove(p);
-//                pytania2.remove(p);
-//            }
-//            else
-//            {
-//                pytania2.set(odp.getNumerPytania()-1,p);
-//            }
-//        }
-//        return ResponseEntity.ok(pytania2);
-//    }
+    @GetMapping("/wyswietl_pytania_do_testu/")
+    public ResponseEntity<?> wyswietlPytania(@RequestParam Long testID){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
+        if(testRepository.findTestByTestID(testID) == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(wynik == null){
+            return ResponseEntity.notFound().build();
+        }
+        ArrayList<Pytanie> pytaniaUzytkownika = new ArrayList<>();
+        ArrayList<Odpowiedz> odp = odpowiedzRepository.findOdpowiedzByUzytkownikIDAndWynikID(uzytkownik.getUzytkownikID(), wynik.getWynikID());
+        for(Odpowiedz o : odp){
+            Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(o.getPytanie().getPytanieID());
+            pytanie.setPula(null);
+            pytanie.setAPoprawne(null);
+            pytanie.setBPoprawne(null);
+            pytanie.setCPoprawne(null);
+            pytanie.setDPoprawne(null);
+            pytanie.setEPoprawne(null);
+            pytanie.setFPoprawne(null);
+            pytaniaUzytkownika.add(pytanie);
+        }
+        return ResponseEntity.ok(pytaniaUzytkownika);
+    }
 
     @GetMapping("/test_czas/")
     public ResponseEntity<?> testCzas(@RequestParam Long testID){
