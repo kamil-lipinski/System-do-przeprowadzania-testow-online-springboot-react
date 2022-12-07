@@ -130,12 +130,51 @@ public class TestController {
         return ResponseEntity.ok(responseMap);
     }
 
+    @DeleteMapping("/odwolaj_test/")
+    public ResponseEntity<?> odwolajTest(@RequestParam Long testID){
+        Map<String, Object> responseMap = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        Test test = testRepository.findTestByTestID(testID);
+        if(test == null || test.getPula() == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!(test.getPula().getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
+            return ResponseEntity.notFound().build();
+        }
+        if(!(test.getStatus().equals("zaplanowany"))){
+            responseMap.put("error", true);
+            responseMap.put("message", "Test już się zakończył lub własnie trwa");
+            return ResponseEntity.status(500).body(responseMap);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime dataTestu = LocalDateTime.parse(test.getData(), formatter);
+        LocalDateTime dataTeraz= LocalDateTime.now();
+        if(!(dataTestu.isAfter(dataTeraz.plusHours(1)))){
+            responseMap.put("error", true);
+            responseMap.put("message", "Test można odwołać maksymalnie 1H przed zaplanowanym rozpoczęciem");
+            return ResponseEntity.status(500).body(responseMap);
+        }
+        ArrayList<Wynik> wyniki = wynikRepository.findWynikByTestID(testID);
+        for(Wynik w : wyniki){
+            ArrayList<Odpowiedz> odpowidzi = odpowiedzRepository.findOdpowiedzByWynikID(w.getWynikID());
+            for(Odpowiedz o : odpowidzi){
+                odpowiedzRepository.delete(o);
+            }
+            wynikRepository.delete(w);
+        }
+        testRepository.delete(test);
+        responseMap.put("error", false);
+        responseMap.put("message", "Pomyślnie odwołano test");
+        return ResponseEntity.ok(responseMap);
+    }
+
     @PostMapping("/zapisz_sie_na_test")
     public ResponseEntity<?> zapiszSieNaTest(@RequestBody HashMap<String, Object> JSON) {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        if (JSON.get("kodDostepu") == null) {
+        if(JSON.get("kodDostepu") == null) {
             responseMap.put("error", true);
             responseMap.put("message", "Nie podano kodu dostępu");
             return ResponseEntity.status(500).body(responseMap);

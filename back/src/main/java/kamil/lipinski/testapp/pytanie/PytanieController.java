@@ -1,5 +1,9 @@
 package kamil.lipinski.testapp.pytanie;
 
+import kamil.lipinski.testapp.odpowiedz.Odpowiedz;
+import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
+import kamil.lipinski.testapp.test.Test;
+import kamil.lipinski.testapp.test.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +14,7 @@ import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.pula.*;
 import kamil.lipinski.testapp.uzytkownik.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +31,12 @@ public class PytanieController {
 
     @Autowired
     private PytanieRepository pytanieRepository;
+
+    @Autowired
+    private TestRepository testRepository;
+
+    @Autowired
+    private OdpowiedzRepository odpowiedzRepository;
 
     @Autowired
     private JwtUserDetailsService userDetailsService;
@@ -105,14 +116,13 @@ public class PytanieController {
     public ResponseEntity<?> wyswietlPytanie(@RequestParam Long pytanieID){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
-            return ResponseEntity.notFound().build();
-        }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
-            return ResponseEntity.notFound().build();
-        }
         Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
+        if(pytanie == null || pytanie.getPula() == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!(pytanie.getPula().getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(pytanie);
     }
 
@@ -121,12 +131,20 @@ public class PytanieController {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+        Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
+        if(pytanie == null || pytanie.getPula() == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
+        if(!(pytanie.getPula().getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
+        }
+        ArrayList<Test> testy = testRepository.findTestByPulaID(pytanie.getPula().getPulaID());
+        for(Test t : testy){
+            if(!(t.getStatus().equals("zakonczony"))){
+                responseMap.put("error", true);
+                responseMap.put("message", "Nie można edytować pytań z puli, do której zaplanowano lub trwają testy");
+                return ResponseEntity.status(500).body(responseMap);
+            }
         }
         String [] parameters = {"tresc", "a", "aPoprawne", "b", "bPoprawne"};
         for(String i : parameters) {
@@ -186,14 +204,27 @@ public class PytanieController {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        if(pytanieRepository.findPytanieByPytanieID(pytanieID) == null){
+        Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(pytanieID);
+        if(pytanie == null || pytanie.getPula() == null){
             return ResponseEntity.notFound().build();
         }
-        if(!(pytanieRepository.findPytanieByPytanieID(Long.valueOf(pytanieID)).getPula().getUzytkownik()
-                .getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
+        if(!(pytanie.getPula().getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID()))){
             return ResponseEntity.notFound().build();
         }
-        pytanieRepository.delete(pytanieRepository.findPytanieByPytanieID(pytanieID));
+        ArrayList<Test> testy = testRepository.findTestByPulaID(pytanie.getPula().getPulaID());
+        for(Test t : testy){
+            if(!(t.getStatus().equals("zakonczony"))){
+                responseMap.put("error", true);
+                responseMap.put("message", "Nie można usuwać pytań z puli, do której zaplanowano lub trwają testy");
+                return ResponseEntity.status(500).body(responseMap);
+            }
+        }
+        ArrayList<Odpowiedz> odpowiedzi = odpowiedzRepository.findOdpowiedzByPytanieID(pytanieID);
+        for(Odpowiedz o : odpowiedzi){
+            o.setPytanie(null);
+            odpowiedzRepository.save(o);
+        }
+        pytanieRepository.delete(pytanie);
         responseMap.put("error", false);
         responseMap.put("message", "Pomyślnie usunieto pytanie");
         return ResponseEntity.ok(responseMap);
