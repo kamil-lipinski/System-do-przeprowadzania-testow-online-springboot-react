@@ -116,9 +116,20 @@ public class TestController {
 //            return ResponseEntity.status(500).body(responseMap);
 //        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
+        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);
+        if(pytania.size() < 5){
+            responseMap.put("error", true);
+            responseMap.put("message", "W puli musi być przynajmniej 5 pytań aby zaplanować test");
+            return ResponseEntity.status(500).body(responseMap);
+        }
         String nazwa = JSON.get("nazwa").toString();
         int czas = Integer.valueOf(JSON.get("czas").toString());
         int iloscPytan = Integer.valueOf(JSON.get("iloscPytan").toString());
+        if(iloscPytan > pytania.size()){
+            responseMap.put("error", true);
+            responseMap.put("message", "W puli nie ma tylu pytań. Ilość pytań w puli: "+pytania.size());
+            return ResponseEntity.status(500).body(responseMap);
+        }
         String kodDostepu = RandomStringUtils.randomAlphanumeric(5);
         while(testRepository.findTestByKodDostepu(kodDostepu) != null){
             kodDostepu = RandomStringUtils.randomAlphanumeric(5);
