@@ -1,9 +1,9 @@
 form {
   max-width: 500px;
-  margin: 0 auto;
+  margin: auto;
   text-align: center;
   font-family: sans-serif;
-  padding: 15%;
+  padding: 10%;
 }
 
 label {
@@ -39,10 +39,3 @@ button:hover {
   margin-top: 20px;
 }
 
-.alert {
-  margin-top: 20px;
-  background-color: #f44336;
-  color: white;
-  padding: 16px;
-  border-radius: 4px;
-}

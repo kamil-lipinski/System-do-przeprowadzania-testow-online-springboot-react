@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import './login.css';
+import './zaloguj-zarejestruj.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Flip } from 'react-toastify';
 
 function Login() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [haslo, setHaslo] = useState('');
   const [error, setError] = useState('');
   
   const notify = useCallback(() => {
@@ -39,7 +39,7 @@ function Login() {
       },
       body: JSON.stringify({
         email: email,
-        haslo: password,
+        haslo: haslo,
       }),
     })
       .then((response) => response.json())
@@ -48,20 +48,12 @@ function Login() {
           setError(data.message);
         } else {
           localStorage.setItem('token', data.token);
-          fetch('http://localhost:8080/uzytkownik/czy_nauczyciel', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${data.token}`,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (data) {
-                window.location.href = '/Nauczyciel';
-              } else {
-                window.location.href = '/Uczen';
-              }
-            });
+          localStorage.setItem('czyNauczyciel', data.czyNauczyciel);
+          if (localStorage.czyNauczyciel === 'true') {
+            window.location.href = '/Nauczyciel';
+          } else {
+            window.location.href = '/Uczen';
+          }
         }
       });
   }
@@ -70,7 +62,7 @@ function Login() {
     <form onSubmit={handleSubmit}>
       <ToastContainer />
       <label>
-        Email:
+        Email
         <input
           type="email"
           value={email}
@@ -79,17 +71,17 @@ function Login() {
       </label>
       <br />
       <label>
-        Hasło:
+        Hasło
         <input
           type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
+          value={haslo}
+          onChange={(event) => setHaslo(event.target.value)}
         />
       </label>
       <br />
       <button type="submit">Zaloguj</button>
       <div className="link-container">
-        <Link to="/register" style={{ color: '#2a71ce' }}>Zarejestruj się</Link>
+        <Link to="/zarejestruj" style={{ color: '#2a71ce' }}>Zarejestruj się</Link>
       </div>
     </form>
   );

@@ -55,8 +55,10 @@ public class AuthenticationController {
                 logger.info("Logged In");
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 String token = jwtTokenUtil.generateToken(userDetails);
+                Boolean czyNauczyciel = uzytkownikRepository.findUzytkownikByEmail(email).isCzyNauczyciel();
                 responseMap.put("error", false);
                 responseMap.put("message", "Logged In");
+                responseMap.put("czyNauczyciel", czyNauczyciel);
                 responseMap.put("token", token);
                 return ResponseEntity.ok(responseMap);
             }else if (uzytkownikRepository.findUzytkownikByEmail(email) != null){
