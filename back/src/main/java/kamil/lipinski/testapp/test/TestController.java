@@ -48,7 +48,7 @@ public class TestController {
     private JwtUserDetailsService userDetailsService;
 
     @Scheduled(fixedDelay = 1000, initialDelay = 1000)
-    public void scheduledZakonczTest(){
+    public void scheduledUstawStatusTestu(){
         ArrayList<Test> testy = testRepository.findTestByStatus("zaplanowany");
         ArrayList<Test> testyTrwajace = testRepository.findTestByStatus("trwa");
         testy.addAll(testyTrwajace);
@@ -96,14 +96,14 @@ public class TestController {
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
             responseMap.put("message", "uzytkownik nie ma uprawnien do zaplanowania testu");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         String [] parameters = {"pulaID", "nazwa", "data", "czas", "iloscPytan"};
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie podano wszystkich wymaganych pól");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         }
         String data = JSON.get("data").toString();
@@ -120,7 +120,7 @@ public class TestController {
         if(pytania.size() < 5){
             responseMap.put("error", true);
             responseMap.put("message", "W puli musi być przynajmniej 5 pytań aby zaplanować test");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String nazwa = JSON.get("nazwa").toString();
         int czas = Integer.valueOf(JSON.get("czas").toString());
@@ -128,7 +128,7 @@ public class TestController {
         if(iloscPytan > pytania.size()){
             responseMap.put("error", true);
             responseMap.put("message", "W puli nie ma tylu pytań. Ilość pytań w puli: "+pytania.size());
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String kodDostepu = RandomStringUtils.randomAlphanumeric(5);
         while(testRepository.findTestByKodDostepu(kodDostepu) != null){
@@ -156,7 +156,7 @@ public class TestController {
         if(!(test.getStatus().equals("zaplanowany"))){
             responseMap.put("error", true);
             responseMap.put("message", "Test już się zakończył lub własnie trwa");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime dataTestu = LocalDateTime.parse(test.getData(), formatter);
@@ -164,7 +164,7 @@ public class TestController {
         if(!(dataTestu.isAfter(dataTeraz.plusHours(1)))){
             responseMap.put("error", true);
             responseMap.put("message", "Test można odwołać maksymalnie 1H przed zaplanowanym rozpoczęciem");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         ArrayList<Wynik> wyniki = wynikRepository.findWynikByTestID(testID);
         for(Wynik w : wyniki){
@@ -188,19 +188,19 @@ public class TestController {
         if(JSON.get("kodDostepu") == null) {
             responseMap.put("error", true);
             responseMap.put("message", "Nie podano kodu dostępu");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String kodDostepu = JSON.get("kodDostepu").toString();
         if(testRepository.findTestByKodDostepu(kodDostepu) == null || kodDostepu == "EXPIRED"){
             responseMap.put("error", true);
             responseMap.put("message", "Kod dostępu wygasł lub jest niepoprawny");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         if(wynikRepository.findWynikByTestIDAndUzytkownikID(
                 testRepository.findTestByKodDostepu(kodDostepu).getTestID(),uzytkownik.getUzytkownikID()) != null){
             responseMap.put("error", true);
             responseMap.put("message", "Użytkownik jest juz zapisany na ten test");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
         Wynik nowyWynik = new Wynik(uzytkownik, testRepository.findTestByKodDostepu(kodDostepu));
         wynikRepository.save(nowyWynik);
@@ -350,6 +350,6 @@ public class TestController {
         }
         responseMap.put("error", true);
         responseMap.put("message", "Test już się zakonczył");
-        return ResponseEntity.status(500).body(responseMap);
+        return ResponseEntity.status(410).body(responseMap); //410 Gone
     }
 }

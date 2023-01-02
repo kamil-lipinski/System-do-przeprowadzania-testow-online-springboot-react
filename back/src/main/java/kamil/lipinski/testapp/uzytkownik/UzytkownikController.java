@@ -44,5 +44,12 @@ public class UzytkownikController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
+    @GetMapping("/czy_nauczyciel")
+    public ResponseEntity<?> czyNauczyciel(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        return ResponseEntity.ok(uzytkownik.isCzyNauczyciel());
+    }
+
 
 }

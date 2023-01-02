@@ -52,12 +52,12 @@ public class OdpowiedzController {
         if(testRepository.findTestByTestID(testID).getStatus().equals("zakonczony")){
             responseMap.put("error", true);
             responseMap.put("message", "Test został już zakonczony");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         if(testRepository.findTestByTestID(testID).getStatus().equals("zaplanowany")){
             responseMap.put("error", true);
             responseMap.put("message", "Test jeszcze się nie rozpoczał");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         if(JSON.get("a") != null){
             nowaOdpowiedz.setA(Boolean.valueOf(JSON.get("a").toString()));

@@ -45,7 +45,7 @@ public class AuthenticationController {
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("message", "nie podano wszystkich wymaganych pol");
-                ResponseEntity.status(500).body(responseMap);
+                ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String email = JSON.get("email").toString();
         String haslo = JSON.get("haslo").toString();
@@ -59,25 +59,25 @@ public class AuthenticationController {
                 responseMap.put("message", "Logged In");
                 responseMap.put("token", token);
                 return ResponseEntity.ok(responseMap);
-            } else {
+            }else if (uzytkownikRepository.findUzytkownikByEmail(email) != null){
                 responseMap.put("error", true);
-                responseMap.put("message", "Invalid Credentials");
-                return ResponseEntity.status(401).body(responseMap);
+                responseMap.put("message", "Niepoprawne hasło");
+                return ResponseEntity.status(401).body(responseMap); //401 Unauthorized
             }
-        } catch (DisabledException e) {
-            e.printStackTrace();
-            responseMap.put("error", true);
-            responseMap.put("message", "User is disabled");
-            return ResponseEntity.status(500).body(responseMap);
+            else {
+                responseMap.put("error", true);
+                responseMap.put("message", "Użytkownik o o adresie email: "+email+" nie istnieje");
+                return ResponseEntity.status(401).body(responseMap); //401 Unauthorized
+            }
         } catch (BadCredentialsException e) {
             responseMap.put("error", true);
-            responseMap.put("message", "Invalid Credentials");
-            return ResponseEntity.status(401).body(responseMap);
+            responseMap.put("message", "Błędne dane...");
+            return ResponseEntity.status(401).body(responseMap); //401 Unauthorized
         } catch (Exception e) {
             e.printStackTrace();
             responseMap.put("error", true);
-            responseMap.put("message", "Something went wrong");
-            return ResponseEntity.status(500).body(responseMap);
+            responseMap.put("message", "Coś poszło nie tak...");
+            return ResponseEntity.status(500).body(responseMap); //500 Internal Server Error
         }
     }
 
@@ -89,7 +89,7 @@ public class AuthenticationController {
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("massage", "nie podano wszystkich wymaganych pol");
-                ResponseEntity.status(500).body(responseMap);
+                ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String imie = JSON.get("imie").toString();
         String nazwisko = JSON.get("nazwisko").toString();
@@ -101,7 +101,7 @@ public class AuthenticationController {
         if(nowyUzytkownik != null) {
             responseMap.put("error", true);
             responseMap.put("message", "Uzytkownik o adresie email: "+email+" juz istnieje");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
 
         nowyUzytkownik = new Uzytkownik(imie, nazwisko, email, new BCryptPasswordEncoder().encode(haslo), czyNauczyciel);

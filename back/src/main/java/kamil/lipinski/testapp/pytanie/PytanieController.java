@@ -49,14 +49,14 @@ public class PytanieController {
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
             responseMap.put("message", "Użytkownik nie ma uprawnień do dodawania pytań");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         String [] parameters = {"pulaID", "tresc", "a", "aPoprawne", "b", "bPoprawne"};
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
@@ -64,7 +64,7 @@ public class PytanieController {
                 uzytkownik.getUzytkownikID()))){
             responseMap.put("error", true);
             responseMap.put("message", "Uzytkownik nie ma uprawnień do dodawania pytań do tego testu");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         int poprawne = 0;
         String tresc = JSON.get("tresc").toString();
@@ -143,7 +143,7 @@ public class PytanieController {
             if(!(t.getStatus().equals("zakonczony"))){
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie można edytować pytań z puli, do której zaplanowano lub trwają testy");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
         }
         String [] parameters = {"tresc", "a", "aPoprawne", "b", "bPoprawne"};
@@ -151,7 +151,7 @@ public class PytanieController {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie podano wszystkich wymaganych pól, należy podać przynajmniej 2 odpowiedzi");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         }
         int poprawne = 0;
@@ -191,7 +191,7 @@ public class PytanieController {
         if(poprawne == 0){
             responseMap.put("error", true);
             responseMap.put("message", "Co najmniej jedna odpowiedź musi byc poprawna");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         pytanieRepository.save(edytowanePytanie);
         responseMap.put("error", false);
@@ -216,7 +216,7 @@ public class PytanieController {
             if(!(t.getStatus().equals("zakonczony"))){
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie można usuwać pytań z puli, do której zaplanowano lub trwają testy");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
         }
         ArrayList<Odpowiedz> odpowiedzi = odpowiedzRepository.findOdpowiedzByPytanieID(pytanieID);

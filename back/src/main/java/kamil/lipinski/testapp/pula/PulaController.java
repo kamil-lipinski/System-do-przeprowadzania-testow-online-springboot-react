@@ -47,12 +47,12 @@ public class PulaController {
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
             responseMap.put("message", "uzytkownik nie ma uprawnien do tworzenia pul pytań");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         if (JSON.get("nazwa") == null) {
             responseMap.put("error", true);
             responseMap.put("message", "Nie podano nazwy testu");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String nazwa = JSON.get("nazwa").toString();
         Pula nowaPula = new Pula(uzytkownik, nazwa);
@@ -79,7 +79,7 @@ public class PulaController {
             if(!(t.getStatus().equals("zakonczony"))){
                 responseMap.put("error", true);
                 responseMap.put("message", "Nie można usunąć puli z pytaniami z której trwają lub są zaplanowane testy");
-                return ResponseEntity.status(500).body(responseMap);
+                return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
             t.setPula(null);
             testRepository.save(t);
@@ -110,7 +110,7 @@ public class PulaController {
         if (JSON.get("nazwa") == null) {
             responseMap.put("error", true);
             responseMap.put("message", "Nie nowej nazwy");
-            return ResponseEntity.status(500).body(responseMap);
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String nazwa = JSON.get("nazwa").toString();
         pula.setNazwa(nazwa);
