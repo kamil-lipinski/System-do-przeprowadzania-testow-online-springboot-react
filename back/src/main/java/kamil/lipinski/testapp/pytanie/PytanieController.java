@@ -106,6 +106,8 @@ public class PytanieController {
             responseMap.put("message", "Co najmniej jedna odpowiedź musi być poprawna");
             return ResponseEntity.status(500).body(responseMap);
         }
+        Pula pula = pulaRepository.findPulaByPulaID(pulaID);
+        pula.setIloscPytan(pula.getIloscPytan()+1);
         pytanieRepository.save(nowePytanie);
         responseMap.put("error", false);
         responseMap.put("message", "Pomyślnie dodano pytanie");

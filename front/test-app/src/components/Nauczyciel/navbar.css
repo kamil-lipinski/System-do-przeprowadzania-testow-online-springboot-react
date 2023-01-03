@@ -1,0 +1,52 @@
+.custom-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #2a71ce;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    user-select: none;
+    z-index: 10;
+}
+
+.right-side {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+.right-side button {
+    background-color: #2a71ce;
+    color: white;
+    height: 58px;
+    width: 200px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 17px;
+}
+  
+.right-side button:hover {
+    background-color: #407bc8;
+}
+
+.left-side button {
+    background-color: #2a71ce;
+    color: white;
+    height: 58px;
+    width: 200px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 17px;
+}
+  
+.left-side button:hover {
+    background-color: #407bc8;
+}
+
+.left-side button.active {
+    border-bottom: 3px solid rgb(118, 175, 250);
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}

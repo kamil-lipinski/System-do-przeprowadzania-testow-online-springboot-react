@@ -113,7 +113,7 @@ public class TestController {
 //        if(dataTestu.isBefore(dataTeraz.plusDays(1))){
 //            responseMap.put("error", true);
 //            responseMap.put("message", "Test musi być zaplanowany przynajmniej 24h przed wyznaczona data");
-//            return ResponseEntity.status(500).body(responseMap);
+//            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
 //        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);

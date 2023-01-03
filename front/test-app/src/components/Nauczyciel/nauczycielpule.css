@@ -1,0 +1,43 @@
+.card-custom{
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+    margin: 0;
+    top: 90%;
+}
+
+.card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.custom-button2 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    user-select: none;
+}
+  
+.custom-button2:hover {
+    background-color: #407bc8;
+}
+
+.custom-button3 {
+    background-color: rgb(231, 73, 73);
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    user-select: none;
+}
+  
+.custom-button3:hover {
+    background-color: rgb(233, 93, 93);
+}
