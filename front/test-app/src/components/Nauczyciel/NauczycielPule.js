@@ -21,6 +21,15 @@ function NauczycielPule() {
     fetchData();
   }, []);
 
+  const handleDelete = (pulaID) => {
+    fetch(`http://localhost:8080/pula/usun_pule/?pulaID=${pulaID}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+  };
+
   return (
     <>
       <NavbarN />
@@ -34,7 +43,7 @@ function NauczycielPule() {
                   <Card.Text>Liczba pytań: {pula.iloscPytan}</Card.Text>
                   <button type="button" className="custom-button2">Podgląd</button>
                   <button type="button" className="custom-button2">Zaplanuj test</button>
-                  <button type="button" className="custom-button3">Usuń pule</button>
+                  <button type="button" className="custom-button3" onClick={() => handleDelete(pula.pulaID)}>Usuń pule</button>
                 </Card.Body>
               </Card>
             </Col>

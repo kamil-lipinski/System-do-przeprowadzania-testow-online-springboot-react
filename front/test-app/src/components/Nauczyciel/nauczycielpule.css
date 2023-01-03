@@ -3,7 +3,7 @@
     flex-direction: column;
     height: 300px;
     margin: 0;
-    top: 90%;
+    top: auto;
 }
 
 .card-body{

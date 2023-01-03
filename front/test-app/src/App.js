@@ -6,6 +6,7 @@ import NauczycielTesty from './components/Nauczyciel/NauczycielTesty';
 import Uczen from './components/Uczen/Uczen';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+
 function App() {
   return (
     <Router>
