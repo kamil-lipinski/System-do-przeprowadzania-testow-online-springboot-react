@@ -1,9 +1,15 @@
+.pule-container{
+    /* margin-top: 60px; */
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
 .card-custom{
     display: flex;
     flex-direction: column;
     height: 300px;
     margin: 0;
-    top: auto;
 }
 
 .card-body{
@@ -40,4 +46,67 @@
   
 .custom-button3:hover {
     background-color: rgb(233, 93, 93);
+}
+
+.pagination{
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 35px;
+    font-size: 15px;
+    gap: 5px;
+    user-select: none;
+}
+
+.pagination .page-num{
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: 400;
+    color: black;
+    text-decoration: none;
+}
+
+.pagination .page-num:hover{
+    background-color: #ccc;
+    color: white;
+}
+
+.pagination .active{
+    background-color: #ccc;
+    color: white;
+    border-radius: 3px;
+}
+
+.custom-button4 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 60px;
+    user-select: none;
+}
+
+.custom-button4:hover {
+    background-color: #407bc8;
+}
+
+.custom-button5 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 60px;
+    user-select: none;
+}
+
+.custom-button5:hover {
+    background-color: #407bc8;
 }
