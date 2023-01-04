@@ -1,8 +1,8 @@
 .pule-container{
-    /* margin-top: 60px; */
     display: flex;
     flex-direction: column;
     align-items: baseline;
+    text-align: center;
 }
 
 .card-custom{
@@ -103,10 +103,46 @@
     border-radius: 4px;
     cursor: pointer;
     margin-bottom: 20px;
-    margin-top: 60px;
+    margin-top: 30px;
     user-select: none;
 }
 
 .custom-button5:hover {
     background-color: #407bc8;
+}
+
+.back{
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    text-align: center;
+}
+
+.container2{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-label2 {
+    display: block;
+    font-size: 20px;
+  }
+
+.custom-button6 {
+    background-color: white;
+    color: black;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-button6:hover {
+    color: #ccc;
 }

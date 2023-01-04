@@ -41,7 +41,7 @@ public class PulaController {
     private JwtUserDetailsService userDetailsService;
 
     @PostMapping("/stworz_pule")
-    public @ResponseBody ResponseEntity<?> stworzPule(@RequestBody HashMap<String, Object> JSON) {
+    public @ResponseBody ResponseEntity<?> stworzPule() {
         Map<String, Object> responseMap = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
@@ -50,13 +50,7 @@ public class PulaController {
             responseMap.put("message", "uzytkownik nie ma uprawnien do tworzenia pul pytań");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
-        if (JSON.get("nazwa") == null) {
-            responseMap.put("error", true);
-            responseMap.put("message", "Nie podano nazwy testu");
-            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
-        }
-        String nazwa = JSON.get("nazwa").toString();
-        Pula nowaPula = new Pula(uzytkownik, nazwa);
+        Pula nowaPula = new Pula(uzytkownik, "Nowa pula");
         pulaRepository.save(nowaPula);
         responseMap.put("error", false);
         responseMap.put("message", "Pula utworzona pomyslnie");
@@ -140,7 +134,7 @@ public class PulaController {
     public ResponseEntity<?> wyswietlPule(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        ArrayList<Pula> pule = pulaRepository.findPulaByUzytkownikID(uzytkownik.getUzytkownikID());
+        ArrayList<Pula> pule = pulaRepository.findPulaByUzytkownikIDOrderByPulaIDDesc(uzytkownik.getUzytkownikID());
         return ResponseEntity.ok(pule);
     }
 }
