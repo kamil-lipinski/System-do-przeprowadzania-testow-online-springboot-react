@@ -44,7 +44,7 @@ public class AuthenticationController {
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("message", "nie podano wszystkich wymaganych pol");
+                responseMap.put("message", "Nie podano wszystkich wymaganych pol");
                 ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String email = JSON.get("email").toString();
@@ -68,7 +68,7 @@ public class AuthenticationController {
             }
             else {
                 responseMap.put("error", true);
-                responseMap.put("message", "Użytkownik o o adresie email: "+email+" nie istnieje");
+                responseMap.put("message", "Użytkownik o o adresie email "+email+" nie istnieje");
                 return ResponseEntity.status(401).body(responseMap); //401 Unauthorized
             }
         } catch (BadCredentialsException e) {
@@ -90,7 +90,7 @@ public class AuthenticationController {
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("massage", "nie podano wszystkich wymaganych pol");
+                responseMap.put("massage", "Nie podano wszystkich wymaganych pol");
                 ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String imie = JSON.get("imie").toString();
@@ -102,7 +102,7 @@ public class AuthenticationController {
         Uzytkownik nowyUzytkownik = uzytkownikRepository.findUzytkownikByEmail(email);
         if(nowyUzytkownik != null) {
             responseMap.put("error", true);
-            responseMap.put("message", "Uzytkownik o adresie email: "+email+" juz istnieje");
+            responseMap.put("message", "Uzytkownik o adresie email "+email+" juz istnieje");
             return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
 

@@ -23,7 +23,8 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 17px;
+    font-size: 20px;
+    font-weight: 400;
 }
   
 .right-side button:hover {
@@ -38,7 +39,8 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 17px;
+    font-size: 20px;
+    font-weight: 400;
 }
   
 .left-side button:hover {
@@ -49,4 +51,5 @@
     border-bottom: 3px solid rgb(118, 175, 250);
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 0px;
+    font-weight: 500;
 }

@@ -104,14 +104,14 @@ public class PulaController {
         }
         if (JSON.get("nazwa") == null) {
             responseMap.put("error", true);
-            responseMap.put("message", "Nie nowej nazwy");
+            responseMap.put("message", "Nie podano nazwy");
             return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String nazwa = JSON.get("nazwa").toString();
         pula.setNazwa(nazwa);
         pulaRepository.save(pula);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyslnie edytowano pytanie");
+        responseMap.put("message", "Pomyslnie zmieniono nazwę");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -126,7 +126,7 @@ public class PulaController {
         if(!pula.getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID())){
             return ResponseEntity.notFound().build();
         }
-        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);
+        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaIDOrderByPytanieIDDesc(pulaID);
         return ResponseEntity.ok(pytania);
     }
 
@@ -136,5 +136,15 @@ public class PulaController {
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         ArrayList<Pula> pule = pulaRepository.findPulaByUzytkownikIDOrderByPulaIDDesc(uzytkownik.getUzytkownikID());
         return ResponseEntity.ok(pule);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> pulaInfo(@RequestParam Long pulaID){
+        Map<String, Object> responseMap = new HashMap<>();
+        Pula pula = pulaRepository.findPulaByPulaID(pulaID);
+        responseMap.put("error", false);
+        responseMap.put("nazwa", pula.getNazwa());
+        responseMap.put("iloscPytan", pula.getIloscPytan());
+        return ResponseEntity.ok(responseMap);
     }
 }

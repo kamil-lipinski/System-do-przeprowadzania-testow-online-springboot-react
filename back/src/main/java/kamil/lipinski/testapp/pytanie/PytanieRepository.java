@@ -13,4 +13,7 @@ public interface PytanieRepository extends JpaRepository<Pytanie, Long> {
     @Query(value = "SELECT * FROM pytanie p WHERE p.pulaid =:pulaID", nativeQuery = true)
     ArrayList<Pytanie> findPytanieByPulaID(@Param("pulaID") Long pulaID);
 
+    @Query(value = "SELECT * FROM pytanie p WHERE p.pulaid =:pulaID ORDER BY p.pytanieid desc", nativeQuery = true)
+    ArrayList<Pytanie> findPytanieByPulaIDOrderByPytanieIDDesc(@Param("pulaID") Long pulaID);
+
 }

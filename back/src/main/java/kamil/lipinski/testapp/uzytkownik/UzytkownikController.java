@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/uzytkownik")
 public class UzytkownikController {

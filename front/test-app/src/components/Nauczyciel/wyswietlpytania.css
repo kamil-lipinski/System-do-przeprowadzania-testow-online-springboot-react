@@ -1,0 +1,94 @@
+.custom-label2 {
+    display: block;
+    font-weight: 500;
+    position: absolute;
+}
+
+.pytania-container{
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    text-align: center;
+}
+
+.card-custom2{
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    margin: 0;
+    text-align: left;
+}
+
+.card-body2{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.custom-cardtext{
+    font-size: 17px;
+    margin-left: 10px;
+}
+
+.custom-cardtext::first-letter{
+    font-weight: 600;
+}
+
+.custom-cardtext-null{
+    font-size: 0px;
+    user-select: none;
+}
+
+.titick-false{
+    opacity: 0%;
+    user-select: none;
+}
+
+.titick-true{
+    color: green;
+
+}
+
+
+.custom-cardtitle{
+    margin-bottom: 20px;
+}
+
+.custom-button8 {
+    background-color: rgb(231, 73, 73);
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    user-select: none;
+    position: absolute;
+    bottom: 20px;
+    left: 18%;
+}
+  
+.custom-button8:hover {
+    background-color: rgb(233, 93, 93);
+}
+
+.custom-label3 {
+    display: block;
+    font-size: 20px;
+}
+
+.custom-button9 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 30px;
+    user-select: none;
+}
+
+.custom-button9:hover {
+    background-color: #407bc8;
+}
