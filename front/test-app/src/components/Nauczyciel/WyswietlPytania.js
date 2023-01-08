@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import NavbarN from './NavbarN';
 import { ToastContainer, toast } from 'react-toastify';
 import { Flip } from 'react-toastify';
@@ -6,9 +6,11 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactPaginate from 'react-paginate';
-import { TiTickOutline } from 'react-icons/ti';
 import './wyswietlpytania.css'
-import Popup from './Popup';
+import Popup from '../Popup';
+import axios from 'axios';
+import { HiOutlinePencilAlt } from 'react-icons/hi';
+import { RiDeleteBinLine } from 'react-icons/ri';
 
 function WyswietlPytania() {
     const currentUrl = window.location.search;
@@ -18,92 +20,206 @@ function WyswietlPytania() {
     const [pytania, setPytania] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const numPages = Math.ceil(pytania.length / 4);
+    const [popup, setPopup] = useState(false);
     const [popup2, setPopup2] = useState(false);
+    const [popup3, setPopup3] = useState(false);
     const [pytanieID, setPytanieID] = useState('');
+    const token = localStorage.getItem('token');
+    const [nowaNazwa, setNowaNazwa] = useState('');
+    const [tresc, setTresc] = useState('');
+    const [a, setA] = useState('');
+    const [b, setB] = useState('');
+    const [c, setC] = useState('');
+    const [d, setD] = useState('');
+    const [e, setE] = useState('');
+    const [f, setF] = useState('');
+    const [apoprawne, setApoprawne] = useState(false);
+    const [bpoprawne, setBpoprawne] = useState(false);
+    const [cpoprawne, setCpoprawne] = useState(false);
+    const [dpoprawne, setDpoprawne] = useState(false);
+    const [epoprawne, setEpoprawne] = useState(false);
+    const [fpoprawne, setFpoprawne] = useState(false);
+    const [i, setI] = useState(0);
+
+    const showError = message => {
+        toast.error(message, {
+          position: 'bottom-right',
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: 'colored',
+          transition: Flip,
+        });
+      };
+    
+      const showSucces = message => {
+        toast.success(message, {
+          position: 'bottom-right',
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: 'colored',
+          transition: Flip,
+        });
+      };
+
+    const fetchInfo = useCallback(async () => {
+        axios.get(`http://localhost:8080/pula/info/?pulaID=${pulaID}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then(response => {
+            setNazwa(response.data.nazwa);
+            setIlosc(response.data.iloscPytan);
+        })
+        .catch(error => {
+            showError(error.response.data.message);
+        });
+    },[pulaID, token]);
+       
+    const fetchPytania = useCallback(async () => {
+        axios.get(`http://localhost:8080/pula/wyswietl_pytania/?pulaID=${pulaID}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then(response => {
+            setPytania(response.data);
+        })
+        .catch(error => {
+            showError(error.response.data.message);
+        });
+    },[pulaID, token]);
 
     useEffect(() => {
-        const fetchNazwa = async () => {
-            const response = await fetch(`http://localhost:8080/pula/info/?pulaID=${pulaID}`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-            const data2 = await response.json();
-            setNazwa(data2.nazwa);
-            setIlosc(data2.iloscPytan);
-        };
-        fetchNazwa();
-        const fetchData = async () => {
-            const response = await fetch(`http://localhost:8080/pula/wyswietl_pytania/?pulaID=${pulaID}`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-            });
-            const data = await response.json();
-            setPytania(data);
-        };
-        fetchData();
-    }, []);
+        fetchInfo();
+        fetchPytania();
+    },[fetchInfo, fetchPytania]);
 
     const handleDelete = async () => {
-        const response = await fetch(`http://localhost:8080/pytanie/usun_pytanie/?pytanieID=${pytanieID}`, {
-            method: 'DELETE',
+        axios.delete(`http://localhost:8080/pytanie/usun_pytanie/?pytanieID=${pytanieID}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
+        })
+        .then(response => {
+            if (response.status === 200){
+                showSucces(response.data.message);
+            }
+            fetchInfo();
+            fetchPytania();
+        })
+        .catch(error => {
+            showError(error.response.data.message);
         });
-        if (response.status === 403 ) {
-            toast.error("Nie można usunąć pytania z puli z której trwają lub są zaplanowane testy", {
-                position: 'bottom-right',
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: false,
-                progress: undefined,
-                theme: 'colored',
-                transition: Flip,
-            });
-        } else {
-            const fetchNazwa = async () => {
-                const response = await fetch(`http://localhost:8080/pula/info/?pulaID=${pulaID}`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
-                const data2 = await response.json();
-                setNazwa(data2.nazwa);
-                setIlosc(data2.iloscPytan);
-            };
-            fetchNazwa();
-            const fetchData = async () => {
-                const response = await fetch(`http://localhost:8080/pula/wyswietl_pytania/?pulaID=${pulaID}`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
-                const data = await response.json();
-                setPytania(data);
-            };
-            fetchData();
-            toast.success("Pomyślnie usunięto pytanie", {
-                position: 'bottom-right',
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: false,
-                progress: undefined,
-                theme: 'colored',
-                transition: Flip,
-            });
-        }
         setPopup2(false);
-      };
+    };
+
+    function handleSubmit(event) {
+        event.preventDefault();
+    
+        if (nowaNazwa.length > 20) {
+          showError("Nazwa nie może zawierać więcej niż 20 znaków");
+          return;
+        }
+    
+        if (nowaNazwa.length === 0) {
+          showError("Nie podano nazwy");
+          return;
+        }
+    
+        axios.put(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${pulaID}`, { nazwa: nowaNazwa }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(response => {
+          if (response.status === 200 ) {
+            showSucces(response.data.message);
+          }
+          fetchInfo();
+        })
+        .catch(error => {
+          showError(error.response.data.message);
+        });
+        setPopup(false);
+    }
+
+    function handleSubmit2(event) {
+        event.preventDefault();
+
+        const data = {
+            pulaID: pulaID,
+            tresc: tresc,
+            a: a, aPoprawne: apoprawne,
+            b: b, bPoprawne: bpoprawne,
+            c: c, cPoprawne: cpoprawne,
+            d: d, dPoprawne: dpoprawne,
+            e: e, ePoprawne: epoprawne,
+            f: f, fPoprawne: fpoprawne
+        };
+
+        if (tresc === ''){delete data.tresc;}
+        if (a === ''){delete data.a;}
+        if (b === ''){delete data.b;}
+        if (c === ''){delete data.c;}
+        if (d === ''){delete data.d;}
+        if (e === ''){delete data.e;}
+        if (f === ''){delete data.f;}
+
+        if (tresc.length > 180) {
+            showError("Treść nie może zawierać więcej niż 180 znaków");
+            return;
+        }
+
+        let temp = 0;
+        for (let i = 0; i < data.length; i++){
+            if(data[i].length > 50)temp++;
+        }
+    
+        if (temp > 0) {
+            showError("Odpowiedź nie może zawierać więcej niż 50 znaków");
+            return;
+        }
+
+        axios.post(`http://localhost:8080/pytanie/stworz_pytanie`, data, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(response => {
+          if (response.status === 200 ) {
+            showSucces(response.data.message);
+            setPopup3(false);
+            setTresc('');
+            setA('');
+            setB('');
+            setC('');
+            setD('');
+            setE('');
+            setF('');
+            setApoprawne(false);
+            setBpoprawne(false);
+            setCpoprawne(false);
+            setDpoprawne(false);
+            setEpoprawne(false);
+            setFpoprawne(false);
+            setI(0);
+          }
+          fetchInfo();
+          fetchPytania();
+        })
+        .catch(error => {
+          showError(error.response.data.message);
+        });
+    }
 
     const pytaniaForCurrentPage = pytania.slice(currentPage * 4, (currentPage + 1) * 4);
 
@@ -113,42 +229,342 @@ function WyswietlPytania() {
 
     if (pytania.length === 0){
         return(
-          <>
-            <NavbarN />
-            <div className="back">
-              <div className="container2">
-                <label className="custom-label3">
-                  W tej puli nie ma jeszcze żadnych pytań...
-                </label>
-                <button type="button" className="custom-button9">Stwórz nowe pytanie</button>
-              </div>
+            <div className="main-background">
+            <Popup trigger={popup3} setTrigger={setPopup3}>
+                <form className="custom-form2" onSubmit={handleSubmit2}>
+                    <label className="custom-label">
+                        Treść pytania
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={tresc}
+                            onChange={(event) => setTresc(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2">
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={apoprawne}
+                                onChange={(event) => setApoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź A
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={a}
+                            onChange={(event) => setA(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2">
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={bpoprawne}
+                                onChange={(event) => setBpoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź B
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={b}
+                            onChange={(event) => setB(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <div className={ i < 1 ? "c-container-off" : "c-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={cpoprawne}
+                                    onChange={(event) => setCpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź C
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={c}
+                                onChange={(event) => setC(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 2 ? "d-container-off" : "d-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={dpoprawne}
+                                    onChange={(event) => setDpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź D
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={d}
+                                onChange={(event) => setD(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 3 ? "e-container-off" : "e-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={epoprawne}
+                                    onChange={(event) => setEpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź E
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={e}
+                                onChange={(event) => setE(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 4 ? "f-container-off" : "f-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={fpoprawne}
+                                    onChange={(event) => setFpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź F
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={f}
+                                onChange={(event) => setF(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className="button-container">
+                        <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
+                        <button className="custom-button" type="submit">Stwórz pytanie</button>
+                        <button className="custom-button11" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                    </div>
+                    <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
+                </form>
+                </Popup>
+                <NavbarN />
+                <ToastContainer />
+                <div className="back">
+                <div className="container2">
+                    <label className="custom-label3">
+                    W tej puli nie ma jeszcze żadnych pytań...
+                    </label>
+                    <button type="button" className="custom-button9" onClick={() => setPopup3(true)}>Stwórz nowe pytanie</button>
+                </div>
+                </div>
             </div>
-          </>
         );
-      }
+    }
 
     
 
     return (
         <div className="main-background">
+            <Popup trigger={popup} setTrigger={setPopup}>
+                <form className="custom-form" onSubmit={handleSubmit}>
+                    <label className="custom-label">
+                        Wprowadź nową nazwę
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={nowaNazwa}
+                            onChange={(event) => setNowaNazwa(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <button className="custom-button" type="submit">Zapisz</button>
+                </form>
+            </Popup>
             <Popup trigger={popup2} setTrigger={setPopup2}>
                 <div className="popup-inside">
-                    <label className="custom-label">
+                    <label className="custom-label" style={{fontWeight:"500"}}>
                         Czy na pewno chcesz usunąć pytanie?
                     </label>
                     <br />
                     <button className="custom-button3" type="button" onClick={() => handleDelete()}>Usuń</button>
                 </div>
             </Popup>
+            <Popup trigger={popup3} setTrigger={setPopup3}>
+                <form className="custom-form2" onSubmit={handleSubmit2}>
+                    <label className="custom-label">
+                        Treść pytania
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={tresc}
+                            onChange={(event) => setTresc(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2">
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={apoprawne}
+                                onChange={(event) => setApoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź A
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={a}
+                            onChange={(event) => setA(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2">
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={bpoprawne}
+                                onChange={(event) => setBpoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź B
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={b}
+                            onChange={(event) => setB(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <div className={ i < 1 ? "c-container-off" : "c-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={cpoprawne}
+                                    onChange={(event) => setCpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź C
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={c}
+                                onChange={(event) => setC(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 2 ? "d-container-off" : "d-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={dpoprawne}
+                                    onChange={(event) => setDpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź D
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={d}
+                                onChange={(event) => setD(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 3 ? "e-container-off" : "e-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={epoprawne}
+                                    onChange={(event) => setEpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź E
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={e}
+                                onChange={(event) => setE(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 4 ? "f-container-off" : "f-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={fpoprawne}
+                                    onChange={(event) => setFpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź F
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={f}
+                                onChange={(event) => setF(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className="button-container">
+                        <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
+                        <button className="custom-button" type="submit">Stwórz pytanie</button>
+                        <button className="custom-button11" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                    </div>
+                    <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
+                </form>
+            </Popup>
             <NavbarN />
             <ToastContainer />
             <Container className="pytania-container">
                 <Container className="card-container">
-                <button type="button" className="custom-button4" /*onClick={() => handleClickStworz()}*/>Stwórz nowe pytanie</button>
-                <label className="custom-label2" style={{top:'50px'}}>
-                    Pula: {nazwa}
+                <button type="button" className="custom-button4" onClick={() => setPopup3(true)}>Stwórz nowe pytanie</button>
+                <label className="custom-label4" style={{top:'50px'}}>
+                    Pula: {nazwa} <button type="button" className="custom-button6" onClick={() => {setPopup(true); setNowaNazwa(nazwa)}}><HiOutlinePencilAlt /></button>
                 </label>
-                <label className="custom-label2" style={{top:'77px'}}>
+                <label className="custom-label4" style={{top:'77px'}}>
                     Ilość pytań: {ilosc}
                 </label>
                 <Row >
@@ -159,30 +575,24 @@ function WyswietlPytania() {
                                 <Card.Title className="custom-cardtitle">{pytanie.tresc}
                                 </Card.Title>
                                 <Card.Text className={
-                                    pytanie.a === null ? 'custom-cardtext-null' : 'custom-cardtext'}>a: {pytanie.a}
-                                    <TiTickOutline size={20} className={pytanie.apoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.a === null ? 'custom-cardtext-null' : pytanie.apoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>A: {pytanie.a}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.b === null ? 'custom-cardtext-null' : 'custom-cardtext'}>b: {pytanie.b}
-                                    <TiTickOutline size={20} className={pytanie.bpoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.b === null ? 'custom-cardtext-null' : pytanie.bpoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>B: {pytanie.b}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.c === null ? 'custom-cardtext-null' : 'custom-cardtext'}>c: {pytanie.c}
-                                    <TiTickOutline size={20} className={pytanie.cpoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.c === null ? 'custom-cardtext-null' : pytanie.cpoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>C: {pytanie.c}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.d === null ? 'custom-cardtext-null' : 'custom-cardtext'}>d: {pytanie.d}
-                                    <TiTickOutline size={20} className={pytanie.dpoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.d === null ? 'custom-cardtext-null' : pytanie.dpoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>D: {pytanie.d}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.e === null ? 'custom-cardtext-null' : 'custom-cardtext'}>e: {pytanie.e}
-                                    <TiTickOutline size={20} className={pytanie.epoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.e === null ? 'custom-cardtext-null' : pytanie.epoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>E: {pytanie.e}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.f === null ? 'custom-cardtext-null' : 'custom-cardtext'}>f: {pytanie.f}
-                                    <TiTickOutline size={20} className={pytanie.fpoprawne === false ? 'titick-false' : 'titick-true'}/>
+                                    pytanie.f === null ? 'custom-cardtext-null' : pytanie.apoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>F: {pytanie.f}
                                 </Card.Text>
-                                <button type="button" className="custom-button8" onClick={() => {setPopup2(true); setPytanieID(pytanie.pytanieID)}}>Usuń pytanie</button>
+                                <button type="button" className="custom-button8" onClick={() => {setPopup2(true); setPytanieID(pytanie.pytanieID)}}><RiDeleteBinLine size={25}/></button>
                             </Card.Body>
                             </Card>
                         </Col>

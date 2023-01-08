@@ -47,13 +47,13 @@ public class PulaController {
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
-            responseMap.put("message", "uzytkownik nie ma uprawnien do tworzenia pul pytań");
+            responseMap.put("message", "Uzytkownik nie ma uprawnień do tworzenia pul pytań");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         Pula nowaPula = new Pula(uzytkownik, "Nowa pula");
         pulaRepository.save(nowaPula);
         responseMap.put("error", false);
-        responseMap.put("message", "Pula utworzona pomyslnie");
+        responseMap.put("message", "Utworzono nową pulę pytań");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -73,7 +73,7 @@ public class PulaController {
         for(Test t : testy){
             if(!(t.getStatus().equals("zakonczony"))){
                 responseMap.put("error", true);
-                responseMap.put("message", "Nie można usunąć puli z pytaniami z której trwają lub są zaplanowane testy");
+                responseMap.put("message", "Nie można usunąć puli do której trwają lub są zaplanowane testy");
                 return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
             t.setPula(null);
@@ -86,7 +86,7 @@ public class PulaController {
         }
         pulaRepository.delete(pulaRepository.findPulaByPulaID(pulaID));
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie usunieto pulę pytań");
+        responseMap.put("message", "Usunięto pulę pytań");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -111,7 +111,7 @@ public class PulaController {
         pula.setNazwa(nazwa);
         pulaRepository.save(pula);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyslnie zmieniono nazwę");
+        responseMap.put("message", "Nazwa puli została zmieniona");
         return ResponseEntity.ok(responseMap);
     }
 

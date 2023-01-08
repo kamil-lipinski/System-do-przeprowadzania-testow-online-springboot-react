@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -7,8 +7,9 @@ import './nauczycielpule.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Flip } from 'react-toastify';
-import { HiOutlinePencilAlt } from 'react-icons/hi';
-import Popup from './Popup';
+  import { HiOutlinePencilAlt } from 'react-icons/hi';
+import Popup from '../Popup';
+import axios from 'axios';
 
 function NauczycielPule() {
   const [pulePytan, setPulePytan] = useState([]);
@@ -17,183 +18,117 @@ function NauczycielPule() {
   const [nazwa, setNazwa] = useState('');
   const [popup, setPopup] = useState(false);
   const [popup2, setPopup2] = useState(false);
-  const [id, setId] = useState('');
+  const [pulaID, setPulaID] = useState('');
+  const token = localStorage.getItem('token');
+
+  const showError = message => {
+    toast.error(message, {
+      position: 'bottom-right',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: 'colored',
+      transition: Flip,
+    });
+  };
+
+  const showSucces = message => {
+    toast.success(message, {
+      position: 'bottom-right',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: 'colored',
+      transition: Flip,
+    });
+  };
+
+  const fetchPulePytan = useCallback(async () => {
+    axios.get('http://localhost:8080/pula/wyswietl_pule', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(response => {
+      setPulePytan(response.data);
+    })
+    .catch(error => {
+      showError(error.response.data.message);
+    });
+  }, [token]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:8080/pula/wyswietl_pule', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await response.json();
-      setPulePytan(data);
-    };
-    fetchData();
-  }, []);
+    fetchPulePytan();
+  },[fetchPulePytan]);
 
   const handleDelete = async () => {
-    const response = await fetch(`http://localhost:8080/pula/usun_pule/?pulaID=${id}`, {
-      method: 'DELETE',
+    axios.delete(`http://localhost:8080/pula/usun_pule/?pulaID=${pulaID}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
+    })
+    .then(response => {
+      if (response.status === 200 ) {
+        showSucces(response.data.message);
+      }
+      fetchPulePytan();
+    })
+    .catch(error => {
+      showError(error.response.data.message);
     });
-    if (response.status === 403 ) {
-      toast.error("Nie można usunąć puli z pytaniami z której trwają lub są zaplanowane testy", {
-        position: 'bottom-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
-    } else {
-      const fetchData = async () => {
-        const response = await fetch('http://localhost:8080/pula/wyswietl_pule', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        const data = await response.json();
-        setPulePytan(data);
-      };
-      fetchData();
-      toast.success("Pomyślnie usunięto pulę", {
-        position: 'bottom-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
-    }
     setPopup2(false);
   };
 
   const handleClickStworz = async () => {
-    const response = await fetch(`http://localhost:8080/pula/stworz_pule`, {
-      method: 'POST',
+    axios.post(`http://localhost:8080/pula/stworz_pule`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
+    })
+    .then(response => {
+      if (response.status === 200 ) {
+        showSucces(response.data.message);
+      }
+      fetchPulePytan();
+    })
+    .catch(error => {
+      showError(error.response.data.message);
     });
-    const fetchData = async () => {
-      const response = await fetch('http://localhost:8080/pula/wyswietl_pule', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      const data = await response.json();
-      setPulePytan(data);
-    };
-    fetchData();
-    if (response.status === 200 ) {
-      toast.success("Pomyślnie utworzono pulę", {
-        position: 'bottom-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
-    }
   };
 
   function handleSubmit(event) {
     event.preventDefault();
 
     if (nazwa.length > 20) {
-      toast.error("Nazwa nie może zawierać więcej niż 20 znaków", {
-        position: 'bottom-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Nazwa nie może zawierać więcej niż 20 znaków");
       return;
     }
 
     if (nazwa.length === 0) {
-      toast.error("Nie podano nazwy", {
-        position: 'bottom-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Nie podano nazwy");
       return;
     }
 
-    fetch(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${id}`, {
-      method: 'PUT',
+    axios.put(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${pulaID}`, { nazwa: nazwa }, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      body: JSON.stringify({
-        nazwa: nazwa,
-      }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.message, {
-            position: 'bottom-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip,
-          });
-        } else {
-          const fetchData = async () => {
-            const response = await fetch('http://localhost:8080/pula/wyswietl_pule', {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-              },
-            });
-            const data = await response.json();
-            setPulePytan(data);
-          };
-          fetchData();
-          toast.success(data.message, {
-            position: 'bottom-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip,
-          });
-        }
-      });
+    .then(response => {
+      if (response.status === 200 ) {
+        showSucces(response.data.message);
+      }
+      fetchPulePytan();
+    })
+    .catch(error => {
+      showError(error.response.data.message);
+    });
     setPopup(false);
   }
 
@@ -238,7 +173,7 @@ function NauczycielPule() {
       </Popup>
       <Popup trigger={popup2} setTrigger={setPopup2}>
         <div className="popup-inside">
-          <label className="custom-label">
+          <label className="custom-label" style={{fontWeight:"500"}}>
             Czy na pewno chcesz usunąć pulę?
           </label>
           <br />
@@ -256,12 +191,12 @@ function NauczycielPule() {
                 <Card className="card-custom">
                   <Card.Body className="card-body">
                     <Card.Title>{pula.nazwa}
-                    <button type="button" className="custom-button6" onClick={() => {setPopup(true); setId(pula.pulaID); setNazwa("")}}><HiOutlinePencilAlt /></button>
+                    <button type="button" className="custom-button6" onClick={() => {setPopup(true); setPulaID(pula.pulaID)}}><HiOutlinePencilAlt /></button>
                     </Card.Title>
                     <Card.Text>Liczba pytań: {pula.iloscPytan}</Card.Text>
                     <button type="button" className="custom-button2" onClick={() => window.location.href = `/wyswietl-pytania/?pulaID=${pula.pulaID}`}>Zarządzaj pytaniami</button>
                     <button type="button" className="custom-button2" onClick={() => window.location.href = '/zaplanuj-test'}>Zaplanuj test</button>
-                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setId(pula.pulaID)}}>Usuń pule</button>
+                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setPulaID(pula.pulaID)}}>Usuń pule</button>
                   </Card.Body>
                 </Card>
               </Col>

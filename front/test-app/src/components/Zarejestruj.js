@@ -4,6 +4,7 @@ import './zaloguj-zarejestruj.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Flip } from 'react-toastify';
+import axios from 'axios';
 
 function Register() {
   const [imie, setImie] = useState('');
@@ -13,52 +14,50 @@ function Register() {
   const [haslo2, setHaslo2] = useState('');
   const [czyNauczyciel, setCzyNauczyciel] = useState(false);
 
+  const showError = message => {
+    toast.error(message, {
+      position: 'top-right',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: 'colored',
+      transition: Flip,
+    });
+  };
+
+  const showSucces = message => {
+    toast.success(message, {
+      position: 'top-right',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: 'colored',
+      transition: Flip,
+    });
+  };
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (!imie || !nazwisko || !email || !haslo || !haslo2) {
-      toast.error("Wszystkie pola nie zostały wypełnione", {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Wszystkie pola nie zostały wypełnione");
       return;
     }
 
     const regex = /^[a-zA-Z0-9]+$/;
     if (!regex.test(haslo)) {
-      toast.error("Hasło może zawierać tylko litery i liczby", {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Hasło może zawierać tylko litery i liczby");
       return;
     }
 
     if (haslo !== haslo2) {
-      toast.error("Hasła nie są takie same", {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: false,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Hasła nie są takie same");
       return;
     }
 
@@ -66,47 +65,26 @@ function Register() {
     const transformedNazwisko = nazwisko.charAt(0).toUpperCase() + nazwisko.slice(1);
     const transformedEmail = email.toLocaleLowerCase();
 
-    fetch('http://localhost:8080/auth/zarejestruj', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        imie: transformedImie,
-        nazwisko: transformedNazwisko,
-        email: transformedEmail,
-        haslo: haslo,
-        czyNauczyciel: czyNauczyciel,
-      }),
+    axios.post('http://localhost:8080/auth/zarejestruj', { imie: transformedImie, 
+                                                          nazwisko: transformedNazwisko,
+                                                          email: transformedEmail,
+                                                          haslo: haslo,
+                                                          czyNauczyciel: czyNauczyciel, 
+                                                        }, {})
+    .then(response => {
+      if (response.status === 200 ) {
+        showSucces(response.data.message);
+      }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.message, {
-            position: 'top-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip,
-          });
-        } else {
-          toast.success(data.message, {
-            position: 'top-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip,
-          });
-        }
-      });
+    .catch(error => {
+      showError(error.response.data.message);
+    });
+    setImie("");
+    setNazwisko("");
+    setEmail("");
+    setHaslo("");
+    setHaslo2("");
+    setCzyNauczyciel(false);
   }
 
   return (

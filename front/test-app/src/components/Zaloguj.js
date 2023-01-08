@@ -4,65 +4,51 @@ import './zaloguj-zarejestruj.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Flip } from 'react-toastify';
+import axios from 'axios';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [haslo, setHaslo] = useState('');
-  
+
+  const showError = message => {
+    toast.error(message, {
+      position: 'top-right',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: 'colored',
+      transition: Flip,
+    });
+  };
+
   function handleSubmit(event) {
     event.preventDefault();
 
     if (!haslo || !email ) {
-      toast.error("Wszystkie pola nie zostały wypełnione", {
-        position: 'top-right',
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: 'colored',
-        transition: Flip,
-      });
+      showError("Wszystkie pola nie zostały wypełnione");
       return;
     }
 
     const transformedEmail = email.toLocaleLowerCase();
 
-    fetch('http://localhost:8080/auth/zaloguj', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: transformedEmail,
-        haslo: haslo,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.message, {
-            position: 'top-right',
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'colored',
-            transition: Flip,
-          });
+    axios.post('http://localhost:8080/auth/zaloguj', { email: transformedEmail, haslo: haslo }, {})
+    .then(response => {
+      if (response.status === 200 ) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('czyNauczyciel', response.data.czyNauczyciel);
+        if (localStorage.czyNauczyciel === 'true') {
+          window.location.href = '/nauczyciel-pule';
         } else {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('czyNauczyciel', data.czyNauczyciel);
-          if (localStorage.czyNauczyciel === 'true') {
-            window.location.href = '/nauczyciel-pule';
-          } else {
-            window.location.href = '/uczen';
-          }
+          window.location.href = '/uczen';
         }
-      });
+      }
+    })
+    .catch(error => {
+      showError(error.response.data.message);
+    });
   }
 
   return (

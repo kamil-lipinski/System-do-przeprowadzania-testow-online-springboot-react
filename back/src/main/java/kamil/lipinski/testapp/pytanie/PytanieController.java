@@ -64,7 +64,7 @@ public class PytanieController {
         if(!(pulaRepository.findPulaByPulaID(pulaID).getUzytkownik().getUzytkownikID().equals(
                 uzytkownik.getUzytkownikID()))){
             responseMap.put("error", true);
-            responseMap.put("message", "Uzytkownik nie ma uprawnień do dodawania pytań do tego testu");
+            responseMap.put("message", "Użytkownik nie ma uprawnień do dodawania pytań do tego testu");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         int poprawne = 0;
