@@ -113,7 +113,7 @@ public class TestController {
 //        LocalDateTime dataTeraz= LocalDateTime.now();
 //        if(dataTestu.isBefore(dataTeraz.plusDays(1))){
 //            responseMap.put("error", true);
-//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 24h przed wyznaczona data");
+//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 24h przed wyznaczoną data");
 //            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
 //        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
@@ -128,7 +128,7 @@ public class TestController {
         int iloscPytan = Integer.valueOf(JSON.get("iloscPytan").toString());
         if(iloscPytan > pytania.size()){
             responseMap.put("error", true);
-            responseMap.put("message", "W puli nie ma tylu pytań. Ilość pytań w puli: "+pytania.size());
+            responseMap.put("message", "W puli nie ma tylu pytań.\nIlość pytań w puli: "+pytania.size());
             return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
         String kodDostepu = RandomStringUtils.randomAlphanumeric(5);
@@ -139,6 +139,7 @@ public class TestController {
         testRepository.save(nowyTest);
         responseMap.put("error", false);
         responseMap.put("message", "Pomyslnie zaplanowano test");
+        responseMap.put("kodDostepu", kodDostepu);
         return ResponseEntity.ok(responseMap);
     }
 

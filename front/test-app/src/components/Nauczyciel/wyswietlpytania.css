@@ -125,7 +125,7 @@
     -ms-user-select: none;
     user-select: none;
     font-weight: bold;
-    left: 35px;
+    left: 14px;
     top: 1px;
 }
   
@@ -201,7 +201,7 @@
     color: #2a71ce;
     width: 150px;
     top: 257px;
-    right: 23%;
+    right: 447.6px;
     background-color: white;
     border-radius: 4px;
 }
@@ -239,7 +239,7 @@
 }
 
 .custom-button10 {
-    background-color: #f6af2c;
+    background-color: #2a71ce;
     color: white;
     padding: 10px;
     border: none;
@@ -252,24 +252,7 @@
 }
 
 .custom-button10:hover {
-    background-color: #f6b948;
-}
-
-.custom-button11 {
-    background-color: rgb(231, 73, 73);
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    user-select: none;
-    width: 70px;
-    font-size: 10px;
-    font-weight: 500;
-}
-  
-.custom-button11:hover {
-    background-color: rgb(233, 93, 93);
+    background-color: #407bc8;
 }
 
 .button-container{
@@ -278,3 +261,6 @@
     justify-content: space-evenly;
 }
 
+.red-label{
+    color: rgb(231, 73, 73) !important;
+}

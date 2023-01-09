@@ -174,8 +174,8 @@ function WyswietlPytania() {
         if (e === ''){delete data.e;}
         if (f === ''){delete data.f;}
 
-        if (tresc.length > 180) {
-            showError("Treść nie może zawierać więcej niż 180 znaków");
+        if (tresc.length > 200) {
+            showError("Treść nie może zawierać więcej niż 200 znaków");
             return;
         }
 
@@ -188,6 +188,75 @@ function WyswietlPytania() {
             showError("Odpowiedź nie może zawierać więcej niż 50 znaków");
             return;
         }
+
+        if(c !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+        }
+
+        if(d !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+        }
+
+        if(e !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+            if(d === ''){
+                showError("Pytanie nie zawiera odpowiedzi D");
+                return;
+            }
+        }
+
+        if(f !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+            if(d === ''){
+                showError("Pytanie nie zawiera odpowiedzi D");
+                return;
+            }
+            if(e === ''){
+                showError("Pytanie nie zawiera odpowiedzi E");
+                return;
+            }
+        }
+        
 
         axios.post(`http://localhost:8080/pytanie/stworz_pytanie`, data, {
           headers: {
@@ -233,7 +302,7 @@ function WyswietlPytania() {
             <Popup trigger={popup3} setTrigger={setPopup3}>
                 <form className="custom-form2" onSubmit={handleSubmit2}>
                     <label className="custom-label">
-                        Treść pytania
+                        Treść pytania <label style={{fontWeight:"500", color:"#2a71ce"}} className={tresc.length > 200 ? "red-label" : ""}>[{tresc.length}/200]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -252,7 +321,7 @@ function WyswietlPytania() {
                             />
                             <span class="checkmark"></span>
                         </label>
-                        I I Odpowiedź A
+                        I I Odpowiedź A <label style={{fontWeight:"500", color:"#2a71ce"}} className={a.length > 50 ? "red-label" : ""}>[{a.length}/50]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -271,7 +340,7 @@ function WyswietlPytania() {
                             />
                             <span class="checkmark"></span>
                         </label>
-                        I I Odpowiedź B
+                        I I Odpowiedź B <label style={{fontWeight:"500", color:"#2a71ce"}} className={b.length > 50 ? "red-label" : ""}>[{b.length}/50]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -291,7 +360,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź C
+                            I I Odpowiedź C <label style={{fontWeight:"500", color:"#2a71ce"}} className={c.length > 50 ? "red-label" : ""}>[{c.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -312,7 +381,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź D
+                            I I Odpowiedź D <label style={{fontWeight:"500", color:"#2a71ce"}} className={d.length > 50 ? "red-label" : ""}>[{d.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -333,7 +402,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź E
+                            I I Odpowiedź E <label style={{fontWeight:"500", color:"#2a71ce"}} className={e.length > 50 ? "red-label" : ""}>[{e.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -354,7 +423,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź F
+                            I I Odpowiedź F <label style={{fontWeight:"500", color:"#2a71ce"}} className={f.length > 50 ? "red-label" : ""}>[{f.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -367,11 +436,11 @@ function WyswietlPytania() {
                     <div className="button-container">
                         <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
                         <button className="custom-button" type="submit">Stwórz pytanie</button>
-                        <button className="custom-button11" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                        <button className="custom-button10" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
                     </div>
                     <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
                 </form>
-                </Popup>
+            </Popup>
                 <NavbarN />
                 <ToastContainer />
                 <div className="back">
@@ -393,7 +462,7 @@ function WyswietlPytania() {
             <Popup trigger={popup} setTrigger={setPopup}>
                 <form className="custom-form" onSubmit={handleSubmit}>
                     <label className="custom-label">
-                        Wprowadź nową nazwę
+                        Wprowadź nową nazwę <label style={{fontWeight:"500", color:"#2a71ce"}} className={nowaNazwa.length > 20 ? "red-label" : ""}>[{nowaNazwa.length}/20]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -417,7 +486,7 @@ function WyswietlPytania() {
             <Popup trigger={popup3} setTrigger={setPopup3}>
                 <form className="custom-form2" onSubmit={handleSubmit2}>
                     <label className="custom-label">
-                        Treść pytania
+                        Treść pytania <label style={{fontWeight:"500", color:"#2a71ce"}} className={tresc.length > 200 ? "red-label" : ""}>[{tresc.length}/200]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -427,7 +496,7 @@ function WyswietlPytania() {
                     </label>
                     <br />
                     <label className="custom-label">
-                        <label class="checkbox-container2">
+                        <label class="checkbox-container2" style={a.length > 9 ? {left:"10px"} : {}}>
                             <input
                                 className="custom-input"
                                 type="checkbox"
@@ -436,7 +505,7 @@ function WyswietlPytania() {
                             />
                             <span class="checkmark"></span>
                         </label>
-                        I I Odpowiedź A
+                        I I Odpowiedź A <label style={{fontWeight:"500", color:"#2a71ce"}} className={a.length > 50 ? "red-label" : ""}>[{a.length}/50]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -446,7 +515,7 @@ function WyswietlPytania() {
                     </label>
                     <br />
                     <label className="custom-label">
-                        <label class="checkbox-container2">
+                        <label class="checkbox-container2" style={b.length > 9 ? {left:"10px"} : {}}>
                             <input
                                 className="custom-input"
                                 type="checkbox"
@@ -455,7 +524,7 @@ function WyswietlPytania() {
                             />
                             <span class="checkmark"></span>
                         </label>
-                        I I Odpowiedź B
+                        I I Odpowiedź B <label style={{fontWeight:"500", color:"#2a71ce"}} className={b.length > 50 ? "red-label" : ""}>[{b.length}/50]</label>
                         <input
                             className="custom-input"
                             type="text"
@@ -466,7 +535,7 @@ function WyswietlPytania() {
                     <br />
                     <div className={ i < 1 ? "c-container-off" : "c-container"}>
                         <label className="custom-label">
-                            <label class="checkbox-container2">
+                            <label class="checkbox-container2" style={c.length > 9 ? {left:"10px"} : {}}>
                                 <input
                                     className="custom-input"
                                     type="checkbox"
@@ -475,7 +544,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź C
+                            I I Odpowiedź C <label style={{fontWeight:"500", color:"#2a71ce"}} className={c.length > 50 ? "red-label" : ""}>[{c.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -487,7 +556,7 @@ function WyswietlPytania() {
                     </div>
                     <div className={ i < 2 ? "d-container-off" : "d-container"}>
                         <label className="custom-label">
-                            <label class="checkbox-container2">
+                            <label class="checkbox-container2" style={d.length > 9 ? {left:"10px"} : {}}>
                                 <input
                                     className="custom-input"
                                     type="checkbox"
@@ -496,7 +565,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź D
+                            I I Odpowiedź D <label style={{fontWeight:"500", color:"#2a71ce"}} className={d.length > 50 ? "red-label" : ""}>[{d.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -507,7 +576,7 @@ function WyswietlPytania() {
                         <br />
                     </div>
                     <div className={ i < 3 ? "e-container-off" : "e-container"}>
-                        <label className="custom-label">
+                        <label className="custom-label" style={e.length > 9 ? {left:"10px"} : {}}>
                             <label class="checkbox-container2">
                                 <input
                                     className="custom-input"
@@ -517,7 +586,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź E
+                            I I Odpowiedź E <label style={{fontWeight:"500", color:"#2a71ce"}} className={e.length > 50 ? "red-label" : ""}>[{e.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -529,7 +598,7 @@ function WyswietlPytania() {
                     </div>
                     <div className={ i < 4 ? "f-container-off" : "f-container"}>
                         <label className="custom-label">
-                            <label class="checkbox-container2">
+                            <label class={"checkbox-container2"} style={f.length > 9 ? {left:"10px"} : {}}>
                                 <input
                                     className="custom-input"
                                     type="checkbox"
@@ -538,7 +607,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź F
+                            I I Odpowiedź F <label style={{fontWeight:"500", color:"#2a71ce"}} className={f.length > 50 ? "red-label" : ""}>[{f.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -551,7 +620,7 @@ function WyswietlPytania() {
                     <div className="button-container">
                         <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
                         <button className="custom-button" type="submit">Stwórz pytanie</button>
-                        <button className="custom-button11" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                        <button className="custom-button10" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
                     </div>
                     <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
                 </form>
@@ -590,7 +659,7 @@ function WyswietlPytania() {
                                     pytanie.e === null ? 'custom-cardtext-null' : pytanie.epoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>E: {pytanie.e}
                                 </Card.Text>
                                 <Card.Text className={
-                                    pytanie.f === null ? 'custom-cardtext-null' : pytanie.apoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>F: {pytanie.f}
+                                    pytanie.f === null ? 'custom-cardtext-null' : pytanie.fpoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>F: {pytanie.f}
                                 </Card.Text>
                                 <button type="button" className="custom-button8" onClick={() => {setPopup2(true); setPytanieID(pytanie.pytanieID)}}><RiDeleteBinLine size={25}/></button>
                             </Card.Body>

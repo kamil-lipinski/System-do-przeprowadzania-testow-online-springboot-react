@@ -153,3 +153,13 @@
 .custom-button6:hover {
     color: #ccc;
 }
+
+.custom-date-picker{
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 0px;
+}
