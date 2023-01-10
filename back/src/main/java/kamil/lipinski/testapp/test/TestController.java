@@ -3,6 +3,7 @@ package kamil.lipinski.testapp.test;
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.odpowiedz.Odpowiedz;
 import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
+import kamil.lipinski.testapp.pula.Pula;
 import kamil.lipinski.testapp.pula.PulaRepository;
 import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.pytanie.PytanieRepository;
@@ -353,5 +354,29 @@ public class TestController {
         responseMap.put("error", true);
         responseMap.put("message", "Test już się zakonczył");
         return ResponseEntity.status(410).body(responseMap); //410 Gone
+    }
+
+    @GetMapping("/wyswietl_testy_zaplanowane")
+    public ResponseEntity<?> wyswietlTestyZaplanowane(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"zaplanowany");
+        return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_testy_trwajace")
+    public ResponseEntity<?> wyswietlTestyTrwajace(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"trwa");
+        return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_testy_zakonczone")
+    public ResponseEntity<?> wyswietlTestyZakonczone(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"zakonczony");
+        return ResponseEntity.ok(testy);
     }
 }

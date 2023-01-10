@@ -6,13 +6,15 @@ import { TbLogout } from 'react-icons/tb';
 function NavbarN() {
     const location = useLocation();
     const pulePytanActive = location.pathname === '/nauczyciel-pule';
-    const testyActive = location.pathname === '/nauczyciel-testy';
+    const testyActive = location.pathname === '/nauczyciel-testy/zaplanowane' || location.pathname === '/nauczyciel-testy/trwajace' || location.pathname === '/nauczyciel-testy/zakonczone' ;
+    const wynikiActive = location.pathname === '/nauczyciel-wyniki';
 
     return (
       <nav className="custom-navbar">
         <div className="left-side">
           <button className={pulePytanActive ? 'active' : ''} onClick={() => window.location.href = '/nauczyciel-pule'}>Pule pytań</button>
-          <button className={testyActive ? 'active' : ''} onClick={() => window.location.href = '/nauczyciel-testy'}>Testy</button>
+          <button className={testyActive ? 'active' : ''} onClick={() => window.location.href = '/nauczyciel-testy/zaplanowane'}>Testy</button>
+          <button className={wynikiActive ? 'active' : ''} onClick={() => window.location.href = '/nauczyciel-wyniki'}>Wyniki</button>
         </div>
         <div className="right-side">
           <button onClick={() => window.location.href = '/'}>Wyloguj  <TbLogout size={23} style={{ stroke: "white", strokeWidth: "2"}}/></button>

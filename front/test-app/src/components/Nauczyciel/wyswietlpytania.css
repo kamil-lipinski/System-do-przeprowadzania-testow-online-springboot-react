@@ -264,3 +264,8 @@
 .red-label{
     color: rgb(231, 73, 73) !important;
 }
+
+hr{
+    margin-bottom: 0px;
+    background: black;
+}

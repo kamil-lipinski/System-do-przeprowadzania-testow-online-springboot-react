@@ -641,7 +641,9 @@ function WyswietlPytania() {
                         <Col key={pytanie.pytanieID} xs={3} style={{marginBottom: "20px"}}>
                             <Card className="card-custom2">
                             <Card.Body className="card-body2">
-                                <Card.Title className="custom-cardtitle">{pytanie.tresc}
+                                <Card.Title className="custom-cardtitle">
+                                    {pytanie.tresc}
+                                    <hr style={{borderRadius:"3px"}}/>
                                 </Card.Title>
                                 <Card.Text className={
                                     pytanie.a === null ? 'custom-cardtext-null' : pytanie.apoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>A: {pytanie.a}
