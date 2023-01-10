@@ -14,17 +14,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import TestyButton from './TestyButtonN';
 import Select from "react-dropdown-select";
 import { VscClose } from 'react-icons/vsc';
-import { FiCopy } from 'react-icons/fi';
 
-function NauczycielTestyZaplanowane() {
+function NauczycielTestyTrwajace() {
   const [testy, setTesty] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const numPages = Math.ceil(testy.length / 8);
   const token = localStorage.getItem('token');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [popup2, setPopup2] = useState(false);
   const [popup3, setPopup3] = useState(false);
-  const [testID, setTestID] = useState('');
   const [nazwaTest, setNazwaTest] = useState('');
   const [czasTest, setCzasTest] = useState('');
   const [iloscPytanTest, setIloscPytanTest] = useState('');
@@ -75,22 +72,8 @@ function NauczycielTestyZaplanowane() {
     });
   };
 
-  const showInfo2 = message => {
-    toast.info(message, { 
-      position: 'bottom-right',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-      theme: 'colored',
-      transition: Flip,
-    });
-  };
-
   const fetchTesty = useCallback(async () => {
-    axios.get('http://localhost:8080/test/wyswietl_testy_zaplanowane_n', {
+    axios.get('http://localhost:8080/test/wyswietl_testy_trwajace_n', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -112,13 +95,15 @@ function NauczycielTestyZaplanowane() {
     let [dayA, monthA, yearA] = dmyA.split("/");
     let [hourA, minuteA, secondA] = timeA.split(":");
     const dataA = new Date(yearA, monthA - 1, dayA, hourA, minuteA, secondA);
+    const dataA2 = dataA.setMinutes(dataA.getMinutes() + a.czas);
     
     let [dmyB, timeB] = b.data.split(" ");
     let [dayB, monthB, yearB] = dmyB.split("/");
     let [hourB, minuteB, secondB] = timeB.split(":");
     const dataB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
+    const dataB2 = dataB.setMinutes(dataB.getMinutes() + b.czas);
 
-    return dataA - dataB;
+    return dataA2 - dataB2;
   });
   
   const testsForCurrentPage = sortedTests.slice(currentPage * 8, (currentPage + 1) * 8);
@@ -134,21 +119,20 @@ function NauczycielTestyZaplanowane() {
     return () => clearInterval(interval);
   }, []);
 
-  function countdown(DateString) {
+  function countdown(DateString, czas) {
     let now = currentTime;
     let [dmy, time] = DateString.split(" ");
     let [day, month, year] = dmy.split("/");
     let [hour, minute, second] = time.split(":");
     const dataTestu = new Date(year, month - 1, day, hour, minute, second);
+    const dataZakonczeniaTestu = dataTestu.setMinutes(dataTestu.getMinutes() + czas);
 
-    if (now > dataTestu) {
+    if (now > dataZakonczeniaTestu) {
       fetchTesty();
-      return 'TEST TRWA';
+      return 'TEST ZAKOŃCZONY';
     }
 
-    let remaining = dataTestu - now;
-
-    let days = Math.floor(remaining / (1000 * 60 * 60 * 24));
+    let remaining = dataZakonczeniaTestu - now;
 
     let hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let hours2 = hours.toString();
@@ -168,26 +152,8 @@ function NauczycielTestyZaplanowane() {
       seconds2 = "0" + seconds;
     };
 
-    return(`${days}d ${hours2}:${minutes2}:${seconds2}`);
+    return(`${hours2}:${minutes2}:${seconds2}`);
   }
-
-  const handleDelete = async () => {
-    axios.delete(`http://localhost:8080/test/odwolaj_test/?testID=${testID}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-    .then(response => {
-      if (response.status === 200 ) {
-        showSucces(response.data.message);
-      }
-      fetchTesty();
-    })
-    .catch(error => {
-      showError(error.response.data.message);
-    });
-    setPopup2(false);
-  };
 
   const fetchPulePytan = useCallback(async () => {
     axios.get('http://localhost:8080/pula/wyswietl_pule', {
@@ -346,7 +312,7 @@ function NauczycielTestyZaplanowane() {
           <div className="container2">
           <TestyButton />
             <label className="custom-label2">
-              Nie posiadasz żadnych zaplanowaych testów...
+              Nie posiadasz żadnych obecnie trwających testów...
             </label>
             <button type="button" className="custom-button5" onClick={() => {setPopup3(true); fetchPulePytan()}}>Zaplanuj test</button>
           </div>
@@ -357,15 +323,6 @@ function NauczycielTestyZaplanowane() {
 
   return (
     <div className="main-background">
-      <Popup trigger={popup2} setTrigger={setPopup2}>
-        <div className="popup-inside">
-          <label className="custom-label" style={{fontWeight:"500"}}>
-            Czy na pewno chcesz odwołać test?
-          </label>
-          <br />
-          <button className="custom-button3" type="button" onClick={() => handleDelete()}>Odwołaj</button>
-        </div>
-      </Popup>
       <Popup trigger={popup3} setTrigger={setPopup3}>
         <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
         <form className="custom-form" onSubmit={handleSubmit2}>
@@ -446,11 +403,11 @@ function NauczycielTestyZaplanowane() {
                   <Card.Body className="card-body">
                     <Card.Title >{test.nazwa}</Card.Title>
                     <hr style={{marginTop:"0px", marginBottom:"20px", borderRadius:"3px"}}/>
-                    <Card.Text><span style={{fontWeight:"500"}}>Do rozpoczęcia: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{countdown(test.data)}</span></Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Do zakończenia: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{countdown(test.data, test.czas)}</span></Card.Text>
                     <Card.Text><span style={{fontWeight:"500"}}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
-                    <Card.Text><span style={{fontWeight:"500"}}>Czas: </span>{test.czas} min <span style={{fontWeight:"500"}}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
-                    <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych} <span style={{fontWeight:"500"}}>Kod: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{test.kodDostepu} </span><button type="button" className="custom-button11" onClick={() => {navigator.clipboard.writeText(test.kodDostepu); showInfo2(`Kod dostępu: ${test.kodDostepu} skopiowano do schowka`)}}><FiCopy /></button></Card.Text>
-                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setTestID(test.testID)}}>Odwołaj test</button>
+                    <Card.Text><span style={{fontWeight:"500"}}>Czas: </span>{test.czas} min</Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych}</Card.Text>
                   </Card.Body>
                 </Card>
               </Col>
@@ -478,4 +435,4 @@ function NauczycielTestyZaplanowane() {
   );
 }
 
-export default NauczycielTestyZaplanowane;
+export default NauczycielTestyTrwajace;

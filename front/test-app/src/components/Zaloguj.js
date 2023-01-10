@@ -42,7 +42,7 @@ function Login() {
         if (localStorage.czyNauczyciel === 'true') {
           window.location.href = '/nauczyciel-pule';
         } else {
-          window.location.href = '/uczen';
+          window.location.href = '/uczen-testy/zaplanowane';
         }
       }
     })

@@ -4,3 +4,27 @@
     justify-content: flex-start;
     gap: 21.3%;
 }
+
+.custom-select{
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 0px;
+    font-weight: normal;
+    height: 46px;
+}
+
+.custom-button11 {
+    background-color: white;
+    color: #2a71ce;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-button11:hover {
+    color: #ccc;
+}

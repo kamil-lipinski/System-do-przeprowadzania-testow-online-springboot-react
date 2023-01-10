@@ -29,6 +29,7 @@ public class Test {
     private int iloscPytan;
     private String kodDostepu;
     private String status = "zaplanowany";
+    private int iloscZapisanych = 0;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pulaID")

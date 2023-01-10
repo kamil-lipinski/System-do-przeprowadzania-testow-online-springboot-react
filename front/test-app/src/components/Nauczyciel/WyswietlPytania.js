@@ -11,6 +11,7 @@ import Popup from '../Popup';
 import axios from 'axios';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
 import { RiDeleteBinLine } from 'react-icons/ri';
+import { VscClose } from 'react-icons/vsc';
 
 function WyswietlPytania() {
     const currentUrl = window.location.search;
@@ -296,10 +297,28 @@ function WyswietlPytania() {
         setCurrentPage(page.selected);
     };
 
+    function resetForm(){
+        setTresc('');
+        setA('');
+        setB('');
+        setC('');
+        setD('');
+        setE('');
+        setF('');
+        setApoprawne(false);
+        setBpoprawne(false);
+        setCpoprawne(false);
+        setDpoprawne(false);
+        setEpoprawne(false);
+        setFpoprawne(false);
+        setI(0);
+    }
+
     if (pytania.length === 0){
         return(
             <div className="main-background">
             <Popup trigger={popup3} setTrigger={setPopup3}>
+            <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
                 <form className="custom-form2" onSubmit={handleSubmit2}>
                     <label className="custom-label">
                         Treść pytania <label style={{fontWeight:"500", color:"#2a71ce"}} className={tresc.length > 200 ? "red-label" : ""}>[{tresc.length}/200]</label>
@@ -484,6 +503,7 @@ function WyswietlPytania() {
                 </div>
             </Popup>
             <Popup trigger={popup3} setTrigger={setPopup3}>
+                <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
                 <form className="custom-form2" onSubmit={handleSubmit2}>
                     <label className="custom-label">
                         Treść pytania <label style={{fontWeight:"500", color:"#2a71ce"}} className={tresc.length > 200 ? "red-label" : ""}>[{tresc.length}/200]</label>

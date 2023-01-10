@@ -20,6 +20,8 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     ArrayList<Test> findTestByStatus(@Param("status") String status);
 
     @Query(value = "SELECT * FROM test t, pula p WHERE t.pulaid = p.pulaid AND t.status =:status AND p.uzytkownikid =:uzytkownikID", nativeQuery = true)
-    ArrayList<Test> findTestByUzytkownikID(@Param("uzytkownikID") Long uzytkownikID, @Param("status") String status);
+    ArrayList<Test> findTestByUzytkownikIDN(@Param("uzytkownikID") Long uzytkownikID, @Param("status") String status);
 
+    @Query(value = "SELECT * FROM test t, wynik w WHERE t.testid = w.testid AND t.status =:status AND w.uzytkownikid =:uzytkownikID", nativeQuery = true)
+    ArrayList<Test> findTestByUzytkownikIDU(@Param("uzytkownikID") Long uzytkownikID, @Param("status") String status);
 }

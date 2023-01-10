@@ -1,12 +1,12 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import './navbar.css';
+import '../navbar.css';
 import { TbLogout } from 'react-icons/tb';
 
 function NavbarN() {
     const location = useLocation();
     const pulePytanActive = location.pathname === '/nauczyciel-pule';
-    const testyActive = location.pathname === '/nauczyciel-testy/zaplanowane' || location.pathname === '/nauczyciel-testy/trwajace' || location.pathname === '/nauczyciel-testy/zakonczone' ;
+    const testyActive = location.pathname === '/nauczyciel-testy/zaplanowane' || location.pathname === '/nauczyciel-testy/trwajace' || location.pathname === '/nauczyciel-testy/zakonczone';
     const wynikiActive = location.pathname === '/nauczyciel-wyniki';
 
     return (

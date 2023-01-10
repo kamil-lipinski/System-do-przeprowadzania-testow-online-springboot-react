@@ -3,32 +3,31 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarN from './NavbarN';
-import './nauczycielpule.css';
+import './nauczycieltesty.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Flip } from 'react-toastify';
-import { HiOutlinePencilAlt } from 'react-icons/hi';
 import Popup from '../Popup';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import TestyButton from './TestyButtonN';
+import Select from "react-dropdown-select";
 import { VscClose } from 'react-icons/vsc';
 
-function NauczycielPule() {
-  const [pulePytan, setPulePytan] = useState([]);
+function NauczycielTestyZakonczone() {
+  const [testy, setTesty] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const numPages = Math.ceil(pulePytan.length / 8);
-  const [nazwa, setNazwa] = useState('');
-  const [popup, setPopup] = useState(false);
-  const [popup2, setPopup2] = useState(false);
-  const [popup3, setPopup3] = useState(false);
-  const [pulaID, setPulaID] = useState('');
+  const numPages = Math.ceil(testy.length / 8);
   const token = localStorage.getItem('token');
+  const [popup3, setPopup3] = useState(false);
   const [nazwaTest, setNazwaTest] = useState('');
   const [czasTest, setCzasTest] = useState('');
   const [iloscPytanTest, setIloscPytanTest] = useState('');
   const [dataTest, setDataTest] = useState(null);
   const [iloscPytanWPuli, setIloscPytanWPuli] = useState('');
+  const [pulaID, setPulaID] = useState(null);
+  const [pulePytan, setPulePytan] = useState([]);
 
   const showError = message => {
     toast.error(message, {
@@ -72,6 +71,44 @@ function NauczycielPule() {
     });
   };
 
+  const fetchTesty = useCallback(async () => {
+    axios.get('http://localhost:8080/test/wyswietl_testy_zakonczone_n', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then(response => {
+      setTesty(response.data);
+    })
+    .catch(error => {
+      showError(error.response.data.message);
+    });
+  }, [token]);
+
+  useEffect(() => {
+    fetchTesty();
+  },[fetchTesty]);
+
+  const sortedTests = testy.sort((a, b) => {
+    let [dmyA, timeA] = a.data.split(" ");
+    let [dayA, monthA, yearA] = dmyA.split("/");
+    let [hourA, minuteA, secondA] = timeA.split(":");
+    const dataA = new Date(yearA, monthA - 1, dayA, hourA, minuteA, secondA);
+    
+    let [dmyB, timeB] = b.data.split(" ");
+    let [dayB, monthB, yearB] = dmyB.split("/");
+    let [hourB, minuteB, secondB] = timeB.split(":");
+    const dataB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
+
+    return dataA - dataB;
+  });
+  
+  const testsForCurrentPage = sortedTests.slice(currentPage * 8, (currentPage + 1) * 8);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page.selected);
+  };
+
   const fetchPulePytan = useCallback(async () => {
     axios.get('http://localhost:8080/pula/wyswietl_pule', {
       headers: {
@@ -85,75 +122,6 @@ function NauczycielPule() {
       showError(error.response.data.message);
     });
   }, [token]);
-
-  useEffect(() => {
-    fetchPulePytan();
-  },[fetchPulePytan]);
-
-  const handleDelete = async () => {
-    axios.delete(`http://localhost:8080/pula/usun_pule/?pulaID=${pulaID}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-    .then(response => {
-      if (response.status === 200 ) {
-        showSucces(response.data.message);
-      }
-      fetchPulePytan();
-    })
-    .catch(error => {
-      showError(error.response.data.message);
-    });
-    setPopup2(false);
-  };
-
-  const handleClickStworz = async () => {
-    axios.post(`http://localhost:8080/pula/stworz_pule`, {}, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-    .then(response => {
-      if (response.status === 200 ) {
-        showSucces(response.data.message);
-      }
-      fetchPulePytan();
-    })
-    .catch(error => {
-      showError(error.response.data.message);
-    });
-  };
-
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    if (nazwa.length > 20) {
-      showError("Nazwa nie może zawierać więcej niż 20 znaków");
-      return;
-    }
-
-    if (nazwa.length === 0) {
-      showError("Nie podano nazwy");
-      return;
-    }
-
-    axios.put(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${pulaID}`, { nazwa: nazwa }, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-    .then(response => {
-      if (response.status === 200 ) {
-        showSucces(response.data.message);
-      }
-      fetchPulePytan();
-    })
-    .catch(error => {
-      showError(error.response.data.message);
-    });
-    setPopup(false);
-  }
 
   function handleSubmit2(event) {
     event.preventDefault();
@@ -198,6 +166,7 @@ function NauczycielPule() {
     })
     .then(response => {
       if (response.status === 200 ) {
+        fetchTesty();
         showSucces(response.data.message);
         showInfo(`Kod dostępu: ${response.data.kodDostepu}`);
         setPopup3(false);
@@ -205,6 +174,7 @@ function NauczycielPule() {
         setDataTest(null);
         setCzasTest('');
         setIloscPytanTest('');
+        setPulaID(null);
       }
     })
     .catch(error => {
@@ -212,68 +182,116 @@ function NauczycielPule() {
     });
   }
 
-
-  const pulasForCurrentPage = pulePytan.slice(currentPage * 8, (currentPage + 1) * 8);
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page.selected);
-  };
-
   function resetForm(){
     setNazwaTest('');
     setDataTest(null);
     setCzasTest('');
     setIloscPytanTest('');
-    setNazwa('');
+    setPulaID(null);
+    setIloscPytanWPuli('');
   }
 
-  if (pulePytan.length === 0){
+  if (testy.length === 0){
     return(
-      <>
+      <div className="main-background">
+        <Popup trigger={popup3} setTrigger={setPopup3}>
+          <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
+          <form className="custom-form" onSubmit={handleSubmit2}>
+            <label className="custom-label">
+              Pula
+              <Select
+                options={pulePytan}
+                labelField="nazwa"
+                valueField="pulaID"
+                onChange={(values) => {setPulaID(values[0].pulaID);setIloscPytanWPuli(values[0].iloscPytan)}}
+                placeholder="Wybierz pulę"
+                className="custom-select"
+              />
+            </label>
+            <br />
+            <label className="custom-label">
+              Nazwa testu <label style={{fontWeight:"500", color:"#2a71ce"}} className={nazwaTest.length > 20 ? "red-label" : ""}>[{nazwaTest.length}/20]</label>
+              <input
+                className="custom-input"
+                type="text"
+                value={nazwaTest}
+                onChange={(event) => setNazwaTest(event.target.value)}
+              />
+            </label>
+            <br />
+            <label className="custom-label">
+              Data
+              <DatePicker
+                selected={dataTest}
+                onChange={(date) => setDataTest(date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                dateFormat="dd/MM/yyyy HH:mm"
+                timeCaption="Godzina"
+                className="custom-date-picker"
+              />
+            </label>
+            <br />
+            <label className="custom-label">
+              Czas <label style={{fontWeight:"500", color:"#2a71ce"}}>[min]</label>
+              <input
+                className="custom-input"
+                type="number"
+                value={czasTest}
+                onChange={(event) => setCzasTest(event.target.value)}
+                min={1}
+                max={180}
+              />
+            </label>
+            <br />
+            <label className="custom-label">
+              Ilość Pytań <label style={{fontWeight:"500", color:"#2a71ce"}}>[{iloscPytanWPuli} pytań w puli]</label>
+              <input
+                className="custom-input"
+                type="number"
+                value={iloscPytanTest}
+                onChange={(event) => setIloscPytanTest(event.target.value)}
+                min={1}
+                max={iloscPytanWPuli}
+              />
+            </label>
+            <br />
+            <button className="custom-button" type="submit">Zaplanuj</button>
+          </form>
+        </Popup>
         <NavbarN />
         <ToastContainer />
         <div className="back">
           <div className="container2">
+          <TestyButton />
             <label className="custom-label2">
-              Nie posiadasz jeszcze żadnych pul pytań...
+              Nie posiadasz żadnych zakończonych testów...
             </label>
-            <button type="button" className="custom-button5" onClick={() => handleClickStworz()}>Stwórz nową pulę</button>
+            <button type="button" className="custom-button5" onClick={() => {setPopup3(true); fetchPulePytan()}}>Zaplanuj test</button>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
     <div className="main-background">
-      <Popup trigger={popup} setTrigger={setPopup}>
-      <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup(false); resetForm()}}><VscClose size={25}/></button>
-        <form className="custom-form" onSubmit={handleSubmit}>
+      <Popup trigger={popup3} setTrigger={setPopup3}>
+        <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
+        <form className="custom-form" onSubmit={handleSubmit2}>
           <label className="custom-label">
-            Wprowadź nową nazwę <label style={{fontWeight:"500", color:"#2a71ce"}} className={nazwa.length > 20 ? "red-label" : ""}>[{nazwa.length}/20]</label>
-            <input
-              className="custom-input"
-              type="text"
-              value={nazwa}
-              onChange={(event) => setNazwa(event.target.value)}
+            Pula
+            <Select
+              options={pulePytan}
+              labelField="nazwa"
+              valueField="pulaID"
+              onChange={(values) => {setPulaID(values[0].pulaID);setIloscPytanWPuli(values[0].iloscPytan)}}
+              placeholder="Wybierz pulę"
+              className="custom-select"
             />
           </label>
           <br />
-          <button className="custom-button" type="submit">Zapisz</button>
-        </form>
-      </Popup>
-      <Popup trigger={popup2} setTrigger={setPopup2}>
-        <div className="popup-inside">
-          <label className="custom-label" style={{fontWeight:"500"}}>
-            Czy na pewno chcesz usunąć pulę?
-          </label>
-          <br />
-          <button className="custom-button3" type="button" onClick={() => handleDelete()}>Usuń</button>
-        </div>
-      </Popup>
-      <Popup trigger={popup3} setTrigger={setPopup3}>
-      <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup3(false); resetForm()}}><VscClose size={25}/></button>
-        <form className="custom-form" onSubmit={handleSubmit2}>
           <label className="custom-label">
             Nazwa testu <label style={{fontWeight:"500", color:"#2a71ce"}} className={nazwaTest.length > 20 ? "red-label" : ""}>[{nazwaTest.length}/20]</label>
             <input
@@ -329,19 +347,21 @@ function NauczycielPule() {
       <ToastContainer />
       <Container className="pule-container">
         <Container className="card-container">
-          <button type="button" className="custom-button4" onClick={() => handleClickStworz()}>Stwórz nową pulę</button>
+          <div className="buttons-container">
+            <TestyButton/><button type="button" className="custom-button4" onClick={() => {setPopup3(true); fetchPulePytan()}}>Zaplanuj test</button>
+          </div>
           <Row >
-            {pulasForCurrentPage.map((pula) => (
-              <Col key={pula.pulaID} xs={3} style={{marginBottom: "20px"}}>
+            {testsForCurrentPage.map((test) => (
+              <Col key={test.testID} xs={3} style={{marginBottom: "20px"}}>
                 <Card className="card-custom">
                   <Card.Body className="card-body">
-                    <Card.Title>{pula.nazwa}
-                    <button type="button" className="custom-button6" onClick={() => {setPopup(true); setPulaID(pula.pulaID)}}><HiOutlinePencilAlt /></button>
-                    </Card.Title>
-                    <Card.Text>Ilość pytań: {pula.iloscPytan}</Card.Text>
-                    <button type="button" className="custom-button2" onClick={() => window.location.href = `/wyswietl-pytania/?pulaID=${pula.pulaID}`}>Zarządzaj pytaniami</button>
-                    <button type="button" className="custom-button2" onClick={() => {if(pula.iloscPytan >= 5){setPopup3(true); setPulaID(pula.pulaID); setIloscPytanWPuli(pula.iloscPytan)}else{showError("W puli musi być przynajmniej 5 pytań aby zaplanować test")}}}>Zaplanuj test</button>
-                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setPulaID(pula.pulaID)}}>Usuń pule</button>
+                    <Card.Title >{test.nazwa}</Card.Title>
+                    <hr style={{marginTop:"0px", marginBottom:"20px", borderRadius:"3px"}}/>
+                    <Card.Text><span style={{fontWeight:"500"}}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Czas: </span>{test.czas} min</Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych}</Card.Text>
+                    <button type="button" className="custom-button2">Zobacz wyniki</button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -369,4 +389,4 @@ function NauczycielPule() {
   );
 }
 
-export default NauczycielPule;
+export default NauczycielTestyZakonczone;

@@ -104,7 +104,7 @@ public class TestController {
         for(String i : parameters) {
             if (JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("message", "Nie podano wszystkich wymaganych pól");
+                responseMap.put("message", "Nie wypełniono wszystkich pól");
                 return ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         }
@@ -112,9 +112,9 @@ public class TestController {
 //        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 //        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
 //        LocalDateTime dataTeraz= LocalDateTime.now();
-//        if(dataTestu.isBefore(dataTeraz.plusDays(1))){
+//        if(dataTestu.isBefore(dataTeraz.plusHours(1))){
 //            responseMap.put("error", true);
-//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 24h przed wyznaczoną data");
+//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 1h przed wyznaczoną data");
 //            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
 //        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
@@ -199,17 +199,18 @@ public class TestController {
             responseMap.put("message", "Kod dostępu wygasł lub jest niepoprawny");
             return ResponseEntity.status(400).body(responseMap); //400 Bad Request
         }
+        Test test = testRepository.findTestByKodDostepu(kodDostepu);
         if(wynikRepository.findWynikByTestIDAndUzytkownikID(
-                testRepository.findTestByKodDostepu(kodDostepu).getTestID(),uzytkownik.getUzytkownikID()) != null){
+                test.getTestID(),uzytkownik.getUzytkownikID()) != null){
             responseMap.put("error", true);
             responseMap.put("message", "Użytkownik jest juz zapisany na ten test");
             return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
-        Wynik nowyWynik = new Wynik(uzytkownik, testRepository.findTestByKodDostepu(kodDostepu));
+        Wynik nowyWynik = new Wynik(uzytkownik, test);
         wynikRepository.save(nowyWynik);
-        int iloscPytan = testRepository.findTestByKodDostepu(kodDostepu).getIloscPytan();
+        int iloscPytan = test.getIloscPytan();
         int numerPytania = 1;
-        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByKodDostepu(kodDostepu).getPula().getPulaID());
+        ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(test.getPula().getPulaID());
         while (iloscPytan != 0){
             Random rand = new Random();
             int n = rand.nextInt(pytania.size());
@@ -219,6 +220,8 @@ public class TestController {
             numerPytania++;
             iloscPytan--;
         }
+        test.setIloscZapisanych(test.getIloscZapisanych()+1);
+        testRepository.save(test);
         responseMap.put("error", false);
         responseMap.put("message", "Pomyślnie zapisano na test");
         return ResponseEntity.ok(responseMap);
@@ -356,27 +359,51 @@ public class TestController {
         return ResponseEntity.status(410).body(responseMap); //410 Gone
     }
 
-    @GetMapping("/wyswietl_testy_zaplanowane")
-    public ResponseEntity<?> wyswietlTestyZaplanowane(){
+    @GetMapping("/wyswietl_testy_zaplanowane_n")
+    public ResponseEntity<?> wyswietlTestyZaplanowaneN(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"zaplanowany");
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDN(uzytkownik.getUzytkownikID(),"zaplanowany");
         return ResponseEntity.ok(testy);
     }
 
-    @GetMapping("/wyswietl_testy_trwajace")
-    public ResponseEntity<?> wyswietlTestyTrwajace(){
+    @GetMapping("/wyswietl_testy_trwajace_n")
+    public ResponseEntity<?> wyswietlTestyTrwajaceN(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"trwa");
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDN(uzytkownik.getUzytkownikID(),"trwa");
         return ResponseEntity.ok(testy);
     }
 
-    @GetMapping("/wyswietl_testy_zakonczone")
-    public ResponseEntity<?> wyswietlTestyZakonczone(){
+    @GetMapping("/wyswietl_testy_zakonczone_n")
+    public ResponseEntity<?> wyswietlTestyZakonczoneN(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
-        ArrayList<Test> testy = testRepository.findTestByUzytkownikID(uzytkownik.getUzytkownikID(),"zakonczony");
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDN(uzytkownik.getUzytkownikID(),"zakonczony");
+        return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_testy_zaplanowane_u")
+    public ResponseEntity<?> wyswietlTestyZaplanowaneU(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDU(uzytkownik.getUzytkownikID(),"zaplanowany");
+        return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_testy_trwajace_u")
+    public ResponseEntity<?> wyswietlTestyTrwajaceU(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDU(uzytkownik.getUzytkownikID(),"trwa");
+        return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_testy_zakonczone_u")
+    public ResponseEntity<?> wyswietlTestyZakonczoneU(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Test> testy = testRepository.findTestByUzytkownikIDU(uzytkownik.getUzytkownikID(),"zakonczony");
         return ResponseEntity.ok(testy);
     }
 }
