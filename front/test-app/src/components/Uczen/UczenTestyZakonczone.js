@@ -20,7 +20,8 @@ function UczenTestyZakonczone() {
     const token = localStorage.getItem('token');
     const [popup, setPopup] = useState(false);
     const [kodDostepu, setKodDostepu] = useState('');
-    const [wynik, setWynik] = useState('');
+    const [wynik, setWynik] = useState({});
+    const [fetchedWynik, setFetchedWynik] = useState(false);
 
     const showError = message => {
         toast.error(message, {
@@ -68,6 +69,24 @@ function UczenTestyZakonczone() {
         fetchTesty();
     }, [fetchTesty]);
 
+    const fetchWynik = useCallback(async (testID) => {
+        const response = await axios.get(`http://localhost:8080/wynik/wyswietl_wynik/?testID=${testID}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        setWynik(prevWynik => {
+            return {...prevWynik, [testID]: response.data.wynik}
+        });
+    }, [token]);
+
+    useEffect(() => {
+        if (testy.length > 0 && !fetchedWynik) {
+          testy.forEach((test) => fetchWynik(test.testID));
+          setFetchedWynik(true);
+        }
+    }, [testy, fetchWynik, fetchedWynik]);
+
     const sortedTests = testy.sort((a, b) => {
         let [dmyA, timeA] = a.data.split(" ");
         let [dayA, monthA, yearA] = dmyA.split("/");
@@ -83,6 +102,7 @@ function UczenTestyZakonczone() {
     });
 
     const testsForCurrentPage = sortedTests.slice(currentPage * 8, (currentPage + 1) * 8);
+    
 
     const handlePageChange = (page) => {
         setCurrentPage(page.selected);
@@ -108,21 +128,7 @@ function UczenTestyZakonczone() {
             showError(error.response.data.message);
         });
     }
-
-    // function getWynik(testID){
-    //     axios.get(`http://localhost:8080/wynik/wyswietl_wynik/?testID=${testID}`, {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`,
-    //         },
-    //     })
-    //     .then(response => {
-    //         setWynik(response.data.wynik);
-    //     })
-    //     .catch(error => {
-    //         showError(error.response.data.message);
-    //     });
-    // }
-
+    
     if (testy.length === 0) {
         return (
             <div className="main-background">
@@ -191,10 +197,10 @@ function UczenTestyZakonczone() {
                                     <Card.Body className="card-body">
                                         <Card.Title >{test.nazwa}</Card.Title>
                                         <hr style={{ marginTop: "0px", marginBottom: "20px", borderRadius: "3px" }} />
-                                        <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
+                                        <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia: </span><br/>{test.data.slice(0, -3)}</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Czas: </span>{test.czas} min</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
-                                        {/* <Card.Text><span style={{ fontWeight: "500" }}>Twój wynik: </span>{getWynik(test.testID)}</Card.Text> */}
+                                        <Card.Text><span style={{ fontWeight: "500" }}>Twój wynik: </span><span style={{ fontWeight: "bold", color: "#2a71ce" }}>{wynik[test.testID]}/{test.iloscPytan}</span></Card.Text>
                                     </Card.Body>
                                 </Card>
                             </Col>

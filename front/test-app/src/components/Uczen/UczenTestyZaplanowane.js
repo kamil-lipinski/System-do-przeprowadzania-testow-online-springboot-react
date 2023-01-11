@@ -219,10 +219,10 @@ function UczenTestyZaplanowane() {
                             <Col key={test.testID} xs={3} style={{ marginBottom: "20px" }}>
                                 <Card className="card-custom">
                                     <Card.Body className="card-body">
-                                        <Card.Title >{test.nazwa}</Card.Title>
+                                        <Card.Title>{test.nazwa}</Card.Title>
                                         <hr style={{ marginTop: "0px", marginBottom: "20px", borderRadius: "3px" }} />
-                                        <Card.Text><span style={{ fontWeight: "500" }}>Do rozpoczęcia: </span><span style={{ fontWeight: "bold", color: "#2a71ce" }}>{countdown(test.data)}</span></Card.Text>
-                                        <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
+                                        <Card.Text><span style={{ fontWeight: "500" }}>Do rozpoczęcia:</span><br/><span style={{ fontWeight: "bold", color: "#2a71ce" }}>{countdown(test.data)}</span></Card.Text>
+                                        <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia:</span><br/>{test.data.slice(0, -3)}</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Czas: </span>{test.czas} min</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
                                     </Card.Body>
