@@ -1,0 +1,77 @@
+.custom-button12 {
+    background-color: white;
+    color: #2a71ce;
+    padding: 7px 7px;
+    border: 1px solid #2a71ce;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    height: 86px;
+    width: 86px;
+}
+
+.custom-button12:hover {
+    color: #ccc;
+    border: 1px solid #ccc;
+}
+
+.custom-button13 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 7px 7px;
+    border: 1px solid white;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    height: 86px;
+    width: 86px;
+    font-weight: bold;
+    box-shadow: 0 0 0 1px #2a71ce,
+                inset 0 0 0 2px white;
+}
+
+.custom-button13:hover {
+    background-color: #407bc8;
+}
+
+.custom-form3 {
+    width: 550px;
+    margin: auto;
+    text-align: center;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-custom3{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    text-align: left;
+    border-color: transparent;
+    width: 500px;
+}
+
+.custom-cardtext2{
+    font-size: 17px;
+    margin-left: 30px;
+    text-indent: -20px;
+}
+
+.custom-button14 {
+    background-color: #2a71ce;
+    color: white;
+    padding: 10px 50px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    margin-top: 10px;
+}
+  
+.custom-button14:hover {
+    background-color: #407bc8;
+}
+

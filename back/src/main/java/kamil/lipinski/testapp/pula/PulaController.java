@@ -1,6 +1,7 @@
 package kamil.lipinski.testapp.pula;
 
 import kamil.lipinski.testapp.odpowiedz.Odpowiedz;
+import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
 import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.test.Test;
 import kamil.lipinski.testapp.test.TestRepository;
@@ -36,6 +37,9 @@ public class PulaController {
 
     @Autowired
     private TestRepository testRepository;
+
+    @Autowired
+    private OdpowiedzRepository odpowiedzRepository;
 
     @Autowired
     private JwtUserDetailsService userDetailsService;
@@ -81,8 +85,11 @@ public class PulaController {
         }
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);
         for(Pytanie p : pytania){
-            p.setPula(null);
-            pytanieRepository.save(p);
+            ArrayList<Odpowiedz> odpowiedzi = odpowiedzRepository.findOdpowiedzByPytanieID(p.getPytanieID());
+            for(Odpowiedz o : odpowiedzi){
+                odpowiedzRepository.delete(o);
+            }
+            pytanieRepository.delete(p);
         }
         pulaRepository.delete(pulaRepository.findPulaByPulaID(pulaID));
         responseMap.put("error", false);

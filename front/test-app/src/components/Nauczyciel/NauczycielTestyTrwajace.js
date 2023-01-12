@@ -61,9 +61,9 @@ function NauczycielTestyTrwajace() {
   const showInfo = message => {
     toast.info(message, { 
       position: 'bottom-right',
-      autoClose: false,
+      autoClose: 1000,
       hideProgressBar: false,
-      closeOnClick: false,
+      closeOnClick: true,
       pauseOnHover: false,
       draggable: false,
       progress: undefined,
@@ -214,7 +214,8 @@ function NauczycielTestyTrwajace() {
       if (response.status === 200 ) {
         fetchTesty();
         showSucces(response.data.message);
-        showInfo(`Kod dostępu: ${response.data.kodDostepu}`);
+        showInfo(`Kod dostępu: ${response.data.kodDostepu} skopiowano do schowka`);
+        navigator.clipboard.writeText(response.data.kodDostepu);
         setPopup3(false);
         setNazwaTest('');
         setDataTest(null);

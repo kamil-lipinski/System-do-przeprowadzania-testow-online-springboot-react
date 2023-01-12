@@ -314,6 +314,26 @@ function WyswietlPytania() {
         setI(0);
     }
 
+    function usunOdp(){
+        if(i === 4){
+            setF('');
+            setFpoprawne(false);
+        }
+        if(i === 3){
+            setE('');
+            setEpoprawne(false);
+        }
+        if(i === 2){
+            setD('');
+            setDpoprawne(false);
+        }
+        if(i === 1){
+            setC('');
+            setCpoprawne(false);
+        }
+        setI(i-1);
+    }
+
     if (pytania.length === 0){
         return(
             <div className="main-background">
@@ -640,7 +660,7 @@ function WyswietlPytania() {
                     <div className="button-container">
                         <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
                         <button className="custom-button" type="submit">Stwórz pytanie</button>
-                        <button className="custom-button10" type="button" onClick={() => i > 0 ? setI(i-1) : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                        <button className="custom-button10" type="button" onClick={() => i > 0 ? usunOdp() : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
                     </div>
                     <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
                 </form>
@@ -651,16 +671,16 @@ function WyswietlPytania() {
                 <Container className="card-container">
                 <button type="button" className="custom-button4" onClick={() => setPopup3(true)}>Stwórz nowe pytanie</button>
                 <label className="custom-label4" style={{top:'50px'}}>
-                    Pula: {nazwa} <button type="button" className="custom-button6" onClick={() => {setPopup(true); setNowaNazwa(nazwa)}}><HiOutlinePencilAlt /></button>
+                    Pula: <span style={{ fontWeight:"normal" }}>{nazwa}</span><button type="button" className="custom-button6" onClick={() => {setPopup(true); setNowaNazwa(nazwa)}}><HiOutlinePencilAlt /></button>
                 </label>
                 <label className="custom-label4" style={{top:'77px'}}>
-                    Ilość pytań: {ilosc}
+                    Ilość pytań: <span style={{ fontWeight:"normal" }}>{ilosc}</span>
                 </label>
                 <Row >
                     {pytaniaForCurrentPage.map((pytanie) => (
                         <Col key={pytanie.pytanieID} xs={3} style={{marginBottom: "20px"}}>
                             <Card className="card-custom2">
-                            <Card.Body className="card-body2">
+                            <Card.Body className="card-body2">  
                                 <Card.Title className="custom-cardtitle">
                                     {pytanie.tresc}
                                     <hr style={{borderRadius:"3px"}}/>

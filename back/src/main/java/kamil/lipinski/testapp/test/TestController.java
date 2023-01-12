@@ -288,77 +288,6 @@ public class TestController {
         return ResponseEntity.ok(pytaniaUzytkownika);
     }
 
-    @GetMapping("/test_czas/")
-    public ResponseEntity<?> testCzas(@RequestParam Long testID){
-        Map<String, Object> responseMap = new HashMap<>();
-        if(testRepository.findTestByTestID(testID) == null){
-            return ResponseEntity.notFound().build();
-        }
-        Test test = testRepository.findTestByTestID(testID);
-        String data = test.getData();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
-        Date dataTestu2 = java.sql.Timestamp.valueOf(dataTestu);
-        LocalDateTime dataZakonczeniaTestu = dataTestu.plusMinutes(test.getCzas());
-        Date dataZakonczeniaTestu2 = java.sql.Timestamp.valueOf(dataZakonczeniaTestu);
-        LocalDateTime dataTeraz = LocalDateTime.now();
-        Date dataTeraz2 = java.sql.Timestamp.valueOf(dataTeraz);
-        if(test.getStatus().equals("zaplanowany")){
-            long roznica = dataTestu2.getTime() - dataTeraz2.getTime();
-            long roznicaSekundy = (roznica / 1000) % 60;
-            String roznicaSekundy2 = roznicaSekundy+"";
-            if(String.valueOf(roznicaSekundy).length() == 1){
-                roznicaSekundy2 = "0"+roznicaSekundy;
-            }
-
-            long roznicaMinuty = (roznica / (1000 * 60)) % 60;
-            String roznicaMinuty2 = roznicaMinuty+"";
-            if(String.valueOf(roznicaMinuty).length() == 1){
-                roznicaMinuty2 = "0"+roznicaMinuty;
-            }
-
-            long roznicaGodziny = (roznica / (1000 * 60 * 60)) % 24;
-            String roznicaGodziny2 = roznicaGodziny+"";
-            if(String.valueOf(roznicaGodziny).length() == 1){
-                roznicaGodziny2 = "0"+roznicaGodziny;
-            }
-
-            long roznicaDni = (roznica / (1000 * 60 * 60 * 24)) % 365;
-            String czas = roznicaDni +":" +roznicaGodziny2 +":" +roznicaMinuty2 +":" +roznicaSekundy2;
-            responseMap.put("error", false);
-            responseMap.put("czas", czas);
-            return ResponseEntity.ok(responseMap);
-        }
-        else if(test.getStatus().equals("trwa")){
-            long roznica = dataZakonczeniaTestu2.getTime() - dataTeraz2.getTime();
-            long roznicaSekundy = (roznica / 1000) % 60;
-            String roznicaSekundy2 = roznicaSekundy+"";
-            if(String.valueOf(roznicaSekundy).length() == 1){
-                roznicaSekundy2 = "0"+roznicaSekundy;
-            }
-
-            long roznicaMinuty = (roznica / (1000 * 60)) % 60;
-            String roznicaMinuty2 = roznicaMinuty+"";
-            if(String.valueOf(roznicaMinuty).length() == 1){
-                roznicaMinuty2 = "0"+roznicaMinuty;
-            }
-
-            long roznicaGodziny = (roznica / (1000 * 60 * 60)) % 24;
-            String roznicaGodziny2 = roznicaGodziny+"";
-            if(String.valueOf(roznicaGodziny).length() == 1){
-                roznicaGodziny2 = "0"+roznicaGodziny;
-            }
-
-            String czas = roznicaGodziny2 +":" +roznicaMinuty2 +":" +roznicaSekundy2;
-            responseMap.put("error", false);
-            responseMap.put("czas", czas);
-            return ResponseEntity.ok(responseMap);
-        }
-        responseMap.put("error", true);
-        responseMap.put("message", "Test już się zakonczył");
-        return ResponseEntity.status(410).body(responseMap); //410 Gone
-    }
-
     @GetMapping("/wyswietl_testy_zaplanowane_n")
     public ResponseEntity<?> wyswietlTestyZaplanowaneN(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -405,5 +334,19 @@ public class TestController {
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         ArrayList<Test> testy = testRepository.findTestByUzytkownikIDU(uzytkownik.getUzytkownikID(),"zakonczony");
         return ResponseEntity.ok(testy);
+    }
+
+    @GetMapping("/wyswietl_test/")
+    public ResponseEntity<?> wyswietlTest(@RequestParam Long testID){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        Test test = testRepository.findTestByTestID(testID);
+        if(test == null || test.getPula() == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(wynikRepository.findWynikByTestIDAndUzytkownikID(testID,uzytkownik.getUzytkownikID()) == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(test);
     }
 }

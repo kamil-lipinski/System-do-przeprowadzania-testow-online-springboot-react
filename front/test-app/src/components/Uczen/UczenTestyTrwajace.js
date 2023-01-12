@@ -56,12 +56,12 @@ function UczenTestyTrwajace() {
                 Authorization: `Bearer ${token}`,
             },
         })
-            .then(response => {
-                setTesty(response.data);
-            })
-            .catch(error => {
-                showError(error.response.data.message);
-            });
+        .then(response => {
+            setTesty(response.data);
+        })
+        .catch(error => {
+            showError(error.response.data.message);
+        });
     }, [token]);
 
     useEffect(() => {
@@ -226,7 +226,7 @@ function UczenTestyTrwajace() {
                                         <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Czas: </span>{test.czas} min</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
-                                        <button type="button" className="custom-button2">Rozpocznij test</button>
+                                        <button type="button" className="custom-button2" onClick={() => window.location.href = `/wyswietl-test/?testID=${test.testID}`}>Rozpocznij test</button>
                                     </Card.Body>
                                 </Card>
                             </Col>

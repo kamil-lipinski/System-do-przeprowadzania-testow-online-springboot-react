@@ -21,6 +21,14 @@ function UczenTestyZaplanowane() {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [popup, setPopup] = useState(false);
     const [kodDostepu, setKodDostepu] = useState('');
+    
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const showError = message => {
         toast.error(message, {
@@ -87,13 +95,6 @@ function UczenTestyZaplanowane() {
     const handlePageChange = (page) => {
         setCurrentPage(page.selected);
     };
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(interval);
-    }, []);
 
     function countdown(DateString) {
         let now = currentTime;

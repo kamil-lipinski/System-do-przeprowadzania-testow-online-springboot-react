@@ -224,8 +224,7 @@ public class PytanieController {
         }
         ArrayList<Odpowiedz> odpowiedzi = odpowiedzRepository.findOdpowiedzByPytanieID(pytanieID);
         for(Odpowiedz o : odpowiedzi){
-            o.setPytanie(null);
-            odpowiedzRepository.save(o);
+            odpowiedzRepository.delete(o);
         }
         Pula pula = pulaRepository.findPulaByPulaID(pytanie.getPula().getPulaID());
         pula.setIloscPytan(pula.getIloscPytan()-1);

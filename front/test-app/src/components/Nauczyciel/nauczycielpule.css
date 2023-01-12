@@ -15,8 +15,9 @@
 .card-custom{
     display: flex;
     flex-direction: column;
-    height: 300px;
+    height: 306px;
     margin: 0;
+    border-color: #ccc;
 }
 
 .card-body{

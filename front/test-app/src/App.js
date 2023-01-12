@@ -9,6 +9,7 @@ import NauczycielTestyZakonczone from './components/Nauczyciel/NauczycielTestyZa
 import UczenTestyZaplanowane from './components/Uczen/UczenTestyZaplanowane';
 import UczenTestyTrwajace from './components/Uczen/UczenTestyTrwajace';
 import UczenTestyZakonczone from './components/Uczen/UczenTestyZakonczone';
+import UczenWyswietlTest from './components/Uczen/UczenWyswietlTest';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
@@ -29,6 +30,8 @@ function App() {
 				<Route path="/uczen-testy/zaplanowane" element={<UczenTestyZaplanowane />} />
         <Route path="/uczen-testy/trwajace" element={<UczenTestyTrwajace />} />
         <Route path="/uczen-testy/zakonczone" element={<UczenTestyZakonczone />} />
+
+        <Route path="/wyswietl-test" element={<UczenWyswietlTest />} />
       </Routes>
     </Router>
   );

@@ -5,7 +5,10 @@ import { TbLogout } from 'react-icons/tb';
 
 function NavbarU() {
     const location = useLocation();
-    const testyActive = location.pathname === '/uczen-testy/zaplanowane' || location.pathname === '/uczen-testy/trwajace' || location.pathname === '/uczen-testy/zakonczone';
+    const testyActive = location.pathname === '/uczen-testy/zaplanowane' || 
+                        location.pathname === '/uczen-testy/trwajace' || 
+                        location.pathname === '/uczen-testy/zakonczone' ||
+                        location.pathname === '/wyswietl-test/';
     const wynikiActive = location.pathname === '/uczen-wyniki';
 
     return (

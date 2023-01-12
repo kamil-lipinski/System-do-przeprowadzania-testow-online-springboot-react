@@ -25,7 +25,7 @@ public class Wynik {
             generator = "wynikIDSequence"
     )
     private Long wynikID;
-    private int wynik;
+    private int wynik = -1;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="uzytkownikID")

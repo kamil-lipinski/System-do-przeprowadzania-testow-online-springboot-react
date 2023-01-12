@@ -3,6 +3,7 @@ package kamil.lipinski.testapp.odpowiedz;
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.pula.PulaRepository;
 import kamil.lipinski.testapp.pytanie.PytanieRepository;
+import kamil.lipinski.testapp.test.Test;
 import kamil.lipinski.testapp.test.TestRepository;
 import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +82,20 @@ public class OdpowiedzController {
         } else nowaOdpowiedz.setF(false);
         odpowiedzRepository.save(nowaOdpowiedz);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie odpowiedziano na pytanie");
+        responseMap.put("message", "Odpowiedź została zapisana");
         return ResponseEntity.ok(responseMap);
     }
+
+    @GetMapping("/wyswietl_odp/")
+    public ResponseEntity<?> wyswietlOdpowiedziUzytkownika(@RequestParam Long testID){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Odpowiedz> odpowiedzi = odpowiedzRepository.findOdpowiedzByUzytkownikIDAndTestID(uzytkownik.getUzytkownikID(),testID);
+        for(Odpowiedz o : odpowiedzi){
+            o.setPytanie(null);
+        }
+        return ResponseEntity.ok(odpowiedzi);
+    }
+
+
 }

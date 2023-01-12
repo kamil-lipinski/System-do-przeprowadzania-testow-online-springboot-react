@@ -64,20 +64,6 @@ function NauczycielTestyZaplanowane() {
   const showInfo = message => {
     toast.info(message, { 
       position: 'bottom-right',
-      autoClose: false,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-      theme: 'colored',
-      transition: Flip,
-    });
-  };
-
-  const showInfo2 = message => {
-    toast.info(message, { 
-      position: 'bottom-right',
       autoClose: 1000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -248,7 +234,8 @@ function NauczycielTestyZaplanowane() {
       if (response.status === 200 ) {
         fetchTesty();
         showSucces(response.data.message);
-        showInfo(`Kod dostępu: ${response.data.kodDostepu}`);
+        showInfo(`Kod dostępu: ${response.data.kodDostepu} skopiowano do schowka`);
+        navigator.clipboard.writeText(response.data.kodDostepu);
         setPopup3(false);
         setNazwaTest('');
         setDataTest(null);
@@ -449,7 +436,7 @@ function NauczycielTestyZaplanowane() {
                     <Card.Text><span style={{fontWeight:"500"}}>Do rozpoczęcia: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{countdown(test.data)}</span></Card.Text>
                     <Card.Text><span style={{fontWeight:"500"}}>Data rozpoczęcia: </span>{test.data.slice(0, -3)}</Card.Text>
                     <Card.Text><span style={{fontWeight:"500"}}>Czas: </span>{test.czas} min <span style={{fontWeight:"500"}}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
-                    <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych} <span style={{fontWeight:"500"}}>Kod: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{test.kodDostepu} </span><button type="button" className="custom-button11" onClick={() => {navigator.clipboard.writeText(test.kodDostepu); showInfo2(`Kod dostępu: ${test.kodDostepu} skopiowano do schowka`)}}><FiCopy /></button></Card.Text>
+                    <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych} <span style={{fontWeight:"500"}}>Kod: </span><span style={{fontWeight:"bold", color:"#2a71ce"}}>{test.kodDostepu} </span><button type="button" className="custom-button11" onClick={() => {navigator.clipboard.writeText(test.kodDostepu); showInfo(`Kod dostępu: ${test.kodDostepu} skopiowano do schowka`)}}><FiCopy /></button></Card.Text>
                     <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setTestID(test.testID)}}>Odwołaj test</button>
                   </Card.Body>
                 </Card>

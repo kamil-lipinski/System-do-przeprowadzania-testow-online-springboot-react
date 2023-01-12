@@ -90,8 +90,8 @@ public class AuthenticationController {
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("massage", "Nie podano wszystkich wymaganych pol");
-                ResponseEntity.status(400).body(responseMap); //400 Bad Request
+                responseMap.put("message", "Nie podano wszystkich wymaganych pol");
+                return ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String imie = JSON.get("imie").toString();
         String nazwisko = JSON.get("nazwisko").toString();

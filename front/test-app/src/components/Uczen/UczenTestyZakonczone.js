@@ -57,12 +57,12 @@ function UczenTestyZakonczone() {
                 Authorization: `Bearer ${token}`,
             },
         })
-            .then(response => {
-                setTesty(response.data);
-            })
-            .catch(error => {
-                showError(error.response.data.message);
-            });
+        .then(response => {
+            setTesty(response.data);
+        })
+        .catch(error => {
+            showError(error.response.data.message);
+        });
     }, [token]);
 
     useEffect(() => {
@@ -98,7 +98,7 @@ function UczenTestyZakonczone() {
         let [hourB, minuteB, secondB] = timeB.split(":");
         const dataB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
 
-        return dataA - dataB;
+        return dataB - dataA;
     });
 
     const testsForCurrentPage = sortedTests.slice(currentPage * 8, (currentPage + 1) * 8);
@@ -195,7 +195,7 @@ function UczenTestyZakonczone() {
                             <Col key={test.testID} xs={3} style={{ marginBottom: "20px" }}>
                                 <Card className="card-custom">
                                     <Card.Body className="card-body">
-                                        <Card.Title >{test.nazwa}</Card.Title>
+                                        <Card.Title>{test.nazwa}</Card.Title>
                                         <hr style={{ marginTop: "0px", marginBottom: "20px", borderRadius: "3px" }} />
                                         <Card.Text><span style={{ fontWeight: "500" }}>Data rozpoczęcia: </span><br/>{test.data.slice(0, -3)}</Card.Text>
                                         <Card.Text><span style={{ fontWeight: "500" }}>Czas: </span>{test.czas} min</Card.Text>
