@@ -12,4 +12,10 @@ public interface WynikRepository extends JpaRepository<Wynik, Long>{
 
     @Query(value = "SELECT * FROM wynik w WHERE w.testid =:testID AND w.uzytkownikid =:uzytkownikID", nativeQuery = true)
     Wynik findWynikByTestIDAndUzytkownikID(@Param("testID") Long testID, @Param("uzytkownikID") Long uzytkownikID);
+
+    @Query(value = "SELECT * FROM wynik w WHERE w.uzytkownikid =:uzytkownikID", nativeQuery = true)
+    ArrayList<Wynik> findWynikByUzytkownikID(@Param("uzytkownikID") Long uzytkownikID);
+
+    @Query(value = "SELECT * FROM wynik w, test t, pula p WHERE w.testid = t.testid AND t.pulaid = p.pulaid AND p.uzytkownikid =:uzytkownikID", nativeQuery = true)
+    ArrayList<Wynik> findWynikByUzytkownikIDN(@Param("uzytkownikID") Long uzytkownikID);
 }

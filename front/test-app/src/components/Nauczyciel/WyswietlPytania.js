@@ -10,7 +10,6 @@ import './wyswietlpytania.css'
 import Popup from '../Popup';
 import axios from 'axios';
 import { HiOutlinePencilAlt } from 'react-icons/hi';
-import { RiDeleteBinLine } from 'react-icons/ri';
 import { VscClose } from 'react-icons/vsc';
 
 function WyswietlPytania() {
@@ -24,6 +23,7 @@ function WyswietlPytania() {
     const [popup, setPopup] = useState(false);
     const [popup2, setPopup2] = useState(false);
     const [popup3, setPopup3] = useState(false);
+    const [popup4, setPopup4] = useState(false);
     const [pytanieID, setPytanieID] = useState('');
     const token = localStorage.getItem('token');
     const [nowaNazwa, setNowaNazwa] = useState('');
@@ -291,6 +291,143 @@ function WyswietlPytania() {
         });
     }
 
+    function handleSubmit3(event) {
+        event.preventDefault();
+
+        const data = {
+            tresc: tresc,
+            a: a, aPoprawne: apoprawne,
+            b: b, bPoprawne: bpoprawne,
+            c: c, cPoprawne: cpoprawne,
+            d: d, dPoprawne: dpoprawne,
+            e: e, ePoprawne: epoprawne,
+            f: f, fPoprawne: fpoprawne
+        };
+
+        if (tresc === ''){delete data.tresc;}
+        if (a === ''){delete data.a;}
+        if (b === ''){delete data.b;}
+        if (c === ''){delete data.c;}
+        if (d === ''){delete data.d;}
+        if (e === ''){delete data.e;}
+        if (f === ''){delete data.f;}
+
+        if (tresc.length > 200) {
+            showError("Treść nie może zawierać więcej niż 200 znaków");
+            return;
+        }
+
+        let temp = 0;
+        for (let i = 0; i < data.length; i++){
+            if(data[i].length > 50)temp++;
+        }
+    
+        if (temp > 0) {
+            showError("Odpowiedź nie może zawierać więcej niż 50 znaków");
+            return;
+        }
+
+        if(c !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+        }
+
+        if(d !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+        }
+
+        if(e !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+            if(d === ''){
+                showError("Pytanie nie zawiera odpowiedzi D");
+                return;
+            }
+        }
+
+        if(f !== ''){
+            if(a === ''){
+                showError("Pytanie nie zawiera odpowiedzi A");
+                return;
+            }
+            if(b === ''){
+                showError("Pytanie nie zawiera odpowiedzi B");
+                return;
+            }
+            if(c === ''){
+                showError("Pytanie nie zawiera odpowiedzi C");
+                return;
+            }
+            if(d === ''){
+                showError("Pytanie nie zawiera odpowiedzi D");
+                return;
+            }
+            if(e === ''){
+                showError("Pytanie nie zawiera odpowiedzi E");
+                return;
+            }
+        }
+        
+
+        axios.put(`http://localhost:8080/pytanie/edytuj_pytanie/?pytanieID=${pytanieID}`, data, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+        .then(response => {
+          if (response.status === 200 ) {
+            showSucces(response.data.message);
+            setPopup4(false);
+            setTresc('');
+            setA('');
+            setB('');
+            setC('');
+            setD('');
+            setE('');
+            setF('');
+            setApoprawne(false);
+            setBpoprawne(false);
+            setCpoprawne(false);
+            setDpoprawne(false);
+            setEpoprawne(false);
+            setFpoprawne(false);
+            setI(0);
+          }
+          fetchInfo();
+          fetchPytania();
+        })
+        .catch(error => {
+          showError(error.response.data.message);
+        });
+    }
+
     const pytaniaForCurrentPage = pytania.slice(currentPage * 4, (currentPage + 1) * 4);
 
     const handlePageChange = (page) => {
@@ -333,6 +470,31 @@ function WyswietlPytania() {
         }
         setI(i-1);
     }
+
+    function fix(pytanie){
+        let j = 0;
+        if(pytanie.c !== null){
+            j++;
+        }else{
+            setC('');
+        }
+        if(pytanie.d !== null){
+            j++;
+        }else{
+            setD('');
+        }
+        if(pytanie.e !== null){
+            j++;
+        }else{
+            setE('');
+        }
+        if(pytanie.f !== null){
+            j++;
+        }else{
+            setF('');
+        }
+        setI(i+j);
+    } 
 
     if (pytania.length === 0){
         return(
@@ -605,7 +767,7 @@ function WyswietlPytania() {
                                 />
                                 <span class="checkmark"></span>
                             </label>
-                            I I Odpowiedź D <label style={{fontWeight:"500", color:"#2a71ce"}} className={d.length > 50 ? "red-label" : ""}>[{d.length}/50]</label>
+                            I I Odpowiedź D <label style={{fontWeight:"500", color:"#2a71ce"}} className={d.length> 50 ? "red-label" : ""}>[{d.length}/50]</label>
                             <input
                                 className="custom-input"
                                 type="text"
@@ -665,6 +827,149 @@ function WyswietlPytania() {
                     <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
                 </form>
             </Popup>
+            <Popup trigger={popup4} setTrigger={setPopup4}>
+                <button className="custom-button7" style={{zIndex:"10"}} onClick={() => {setPopup4(false); resetForm()}}><VscClose size={25}/></button>
+                <form className="custom-form2" onSubmit={handleSubmit3}>
+                    <label className="custom-label">
+                        Treść pytania <label style={{fontWeight:"500", color:"#2a71ce"}} className={tresc.length > 200 ? "red-label" : ""}>[{tresc.length}/200]</label>
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={tresc}
+                            onChange={(event) => setTresc(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2" style={a.length > 9 ? {left:"10px"} : {}}>
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={apoprawne}
+                                onChange={(event) => setApoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź A <label style={{fontWeight:"500", color:"#2a71ce"}} className={a.length > 50 ? "red-label" : ""}>[{a.length}/50]</label>
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={a}
+                            onChange={(event) => setA(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <label className="custom-label">
+                        <label class="checkbox-container2" style={b.length > 9 ? {left:"10px"} : {}}>
+                            <input
+                                className="custom-input"
+                                type="checkbox"
+                                checked={bpoprawne}
+                                onChange={(event) => setBpoprawne(event.target.checked)}
+                            />
+                            <span class="checkmark"></span>
+                        </label>
+                        I I Odpowiedź B <label style={{fontWeight:"500", color:"#2a71ce"}} className={b.length > 50 ? "red-label" : ""}>[{b.length}/50]</label>
+                        <input
+                            className="custom-input"
+                            type="text"
+                            value={b}
+                            onChange={(event) => setB(event.target.value)}
+                        />
+                    </label>
+                    <br />
+                    <div className={ i < 1 ? "c-container-off" : "c-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2" style={c.length > 9 ? {left:"10px"} : {}}>
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={cpoprawne}
+                                    onChange={(event) => setCpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź C <label style={{fontWeight:"500", color:"#2a71ce"}} className={c.length > 50 ? "red-label" : ""}>[{c.length}/50]</label>
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={c}
+                                onChange={(event) => setC(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 2 ? "d-container-off" : "d-container"}>
+                        <label className="custom-label">
+                            <label class="checkbox-container2" style={d.length > 9 ? {left:"10px"} : {}}>
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={dpoprawne}
+                                    onChange={(event) => setDpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź D <label style={{fontWeight:"500", color:"#2a71ce"}} className={d.length > 50 ? "red-label" : ""}>[{d.length}/50]</label>
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={d}
+                                onChange={(event) => setD(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 3 ? "e-container-off" : "e-container"}>
+                        <label className="custom-label" style={e.length > 9 ? {left:"10px"} : {}}>
+                            <label class="checkbox-container2">
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={epoprawne}
+                                    onChange={(event) => setEpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź E <label style={{fontWeight:"500", color:"#2a71ce"}} className={e.length > 50 ? "red-label" : ""}>[{e.length}/50]</label>
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={e}
+                                onChange={(event) => setE(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className={ i < 4 ? "f-container-off" : "f-container"}>
+                        <label className="custom-label">
+                            <label class={"checkbox-container2"} style={f.length > 9 ? {left:"10px"} : {}}>
+                                <input
+                                    className="custom-input"
+                                    type="checkbox"
+                                    checked={fpoprawne}
+                                    onChange={(event) => setFpoprawne(event.target.checked)}
+                                />
+                                <span class="checkmark"></span>
+                            </label>
+                            I I Odpowiedź F <label style={{fontWeight:"500", color:"#2a71ce"}} className={f.length > 50 ? "red-label" : ""}>[{f.length}/50]</label>
+                            <input
+                                className="custom-input"
+                                type="text"
+                                value={f}
+                                onChange={(event) => setF(event.target.value)}
+                            />
+                        </label>
+                        <br />
+                    </div>
+                    <div className="button-container">
+                        <button className="custom-button10" type="button" onClick={() => i < 4 ? setI(i+1) : showError("Pytanie może mieć maksymalnie 6 odpowiedzi")}>Dodaj Odpowiedź</button>
+                        <button className="custom-button" type="submit">Zapisz zmiany</button>
+                        <button className="custom-button10" type="button" onClick={() => i > 0 ? usunOdp() : showError("Pytanie musi mieć co najmniej 2 odpowiedzi")}>Usuń Odpowiedź</button>
+                    </div>
+                    <label className="custom-label5">Jeśli odpowiedź jest poprawna należy znaznaczyć pole znajdujące się obok</label>
+                </form>
+            </Popup>
             <NavbarN />
             <ToastContainer />
             <Container className="pytania-container">
@@ -680,7 +985,7 @@ function WyswietlPytania() {
                     {pytaniaForCurrentPage.map((pytanie) => (
                         <Col key={pytanie.pytanieID} xs={3} style={{marginBottom: "20px"}}>
                             <Card className="card-custom2">
-                            <Card.Body className="card-body2">  
+                            <Card.Body className="card-body2" style={{overflow:"auto"}}>  
                                 <Card.Title className="custom-cardtitle">
                                     {pytanie.tresc}
                                     <hr style={{borderRadius:"3px"}}/>
@@ -703,8 +1008,12 @@ function WyswietlPytania() {
                                 <Card.Text className={
                                     pytanie.f === null ? 'custom-cardtext-null' : pytanie.fpoprawne === true ? 'custom-cardtext-true' : 'custom-cardtext'}>F: {pytanie.f}
                                 </Card.Text>
-                                <button type="button" className="custom-button8" onClick={() => {setPopup2(true); setPytanieID(pytanie.pytanieID)}}><RiDeleteBinLine size={25}/></button>
                             </Card.Body>
+                            <button type="button" className="custom-button2" style={{width:"250px", alignSelf:"center"}} onClick={() => {
+                                setPopup4(true); setPytanieID(pytanie.pytanieID);setTresc(pytanie.tresc);setA(pytanie.a);setB(pytanie.b);setC(pytanie.c);
+                                setD(pytanie.d);setE(pytanie.e);setF(pytanie.f);setApoprawne(pytanie.apoprawne);setBpoprawne(pytanie.bpoprawne);
+                                setCpoprawne(pytanie.cpoprawne);setDpoprawne(pytanie.dpoprawne);setEpoprawne(pytanie.epoprawne);setFpoprawne(pytanie.fpoprawne);fix(pytanie)}}>Edytuj pytanie</button>
+                            <button type="button" className="custom-button3" style={{marginBottom:"20px", width:"250px", alignSelf:"center"}} onClick={() => {setPopup2(true); setPytanieID(pytanie.pytanieID)}}>Usuń pytanie</button>
                             </Card>
                         </Col>
                     ))}

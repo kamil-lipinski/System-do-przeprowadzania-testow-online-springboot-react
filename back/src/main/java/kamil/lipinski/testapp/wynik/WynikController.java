@@ -1,27 +1,18 @@
 package kamil.lipinski.testapp.wynik;
 
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
-import kamil.lipinski.testapp.odpowiedz.Odpowiedz;
 import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
-import kamil.lipinski.testapp.pula.Pula;
 import kamil.lipinski.testapp.pula.PulaRepository;
-import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.pytanie.PytanieRepository;
 import kamil.lipinski.testapp.test.TestRepository;
 import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;
-import kamil.lipinski.testapp.wynik.Wynik;
-import kamil.lipinski.testapp.wynik.WynikRepository;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -50,8 +41,8 @@ public class WynikController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @GetMapping("/wyswietl_wynik/")
-    public ResponseEntity<?> wyswietlWynik(@RequestParam Long testID){
+    @GetMapping("/wyswietl_wynik_u/")
+    public ResponseEntity<?> wyswietlWynikU(@RequestParam Long testID){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
@@ -62,5 +53,41 @@ public class WynikController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(wynik);
+    }
+
+    @GetMapping("/wyswietl_wyniki_u")
+    public ResponseEntity<?> wyswietlWynikiU(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Wynik> wyniki = wynikRepository.findWynikByUzytkownikID(uzytkownik.getUzytkownikID());
+        if(wyniki == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(wyniki);
+    }
+
+    @GetMapping("/wyswietl_wyniki_n")
+    public ResponseEntity<?> wyswietlWynikiN(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Wynik> wyniki = wynikRepository.findWynikByUzytkownikIDN(uzytkownik.getUzytkownikID());
+        if(wyniki == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(wyniki);
+    }
+
+    @GetMapping("/wyswietl_wyniki_n2/")
+    public ResponseEntity<?> wyswietlWynikN(@RequestParam Long testID){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
+        ArrayList<Wynik> wyniki = wynikRepository.findWynikByTestID(testID);
+        if(wyniki == null){
+            return ResponseEntity.notFound().build();
+        }
+        if(!testRepository.findTestByTestID(testID).getPula().getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID())){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(wyniki);
     }
 }

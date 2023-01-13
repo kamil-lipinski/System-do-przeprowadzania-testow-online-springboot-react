@@ -93,7 +93,7 @@ function UczenWyswietlTest() {
     };
 
     const fetchWynik = useCallback(async () => {
-        axios.get(`http://localhost:8080/wynik/wyswietl_wynik/?testID=${testID}`, {
+        axios.get(`http://localhost:8080/wynik/wyswietl_wynik_u/?testID=${testID}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -418,12 +418,12 @@ function UczenWyswietlTest() {
                     <Row >
                         {pytaniaForCurrentPage.map((pytanie) => (
                             <Col key={pytanie.pytanieID} xs={1} style={{ marginBottom: "20px" }}>
-                                <button type="button" className={odp[pytanie.nrPytania-1].a === true || 
-                                                                odp[pytanie.nrPytania-1].b === true ||
-                                                                odp[pytanie.nrPytania-1].c === true ||
-                                                                odp[pytanie.nrPytania-1].d === true ||
-                                                                odp[pytanie.nrPytania-1].e === true ||
-                                                                odp[pytanie.nrPytania-1].f === true ? "custom-button13" : "custom-button12"} 
+                                <button type="button" className={odp[pytanie.nrPytania-1]?.a || 0 === true || 
+                                                                odp[pytanie.nrPytania-1]?.b || 0 === true ||
+                                                                odp[pytanie.nrPytania-1]?.c || 0 === true ||
+                                                                odp[pytanie.nrPytania-1]?.d || 0 === true ||
+                                                                odp[pytanie.nrPytania-1]?.e || 0 === true ||
+                                                                odp[pytanie.nrPytania-1]?.f || 0 === true ? "custom-button13" : "custom-button12"} 
                                 onClick={() => {
                                     setPopup(true); setNr(pytanie.nrPytania); setTresc(pytanie.tresc); setATresc(pytanie.a); 
                                     setBTresc(pytanie.b); setCTresc(pytanie.c); setDTresc(pytanie.d); 

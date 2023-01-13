@@ -25,6 +25,7 @@ public class Pula {
     )
     private Long pulaID;
     private String nazwa;
+    private boolean czyZarchiwizowana = false;
     private int iloscPytan = 0;
 
     @ManyToOne(cascade = CascadeType.REFRESH)

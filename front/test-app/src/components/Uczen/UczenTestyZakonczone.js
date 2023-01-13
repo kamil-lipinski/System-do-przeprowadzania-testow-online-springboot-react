@@ -70,7 +70,7 @@ function UczenTestyZakonczone() {
     }, [fetchTesty]);
 
     const fetchWynik = useCallback(async (testID) => {
-        const response = await axios.get(`http://localhost:8080/wynik/wyswietl_wynik/?testID=${testID}`, {
+        const response = await axios.get(`http://localhost:8080/wynik/wyswietl_wynik_u/?testID=${testID}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

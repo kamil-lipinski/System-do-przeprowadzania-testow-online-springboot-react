@@ -3,7 +3,6 @@ package kamil.lipinski.testapp.odpowiedz;
 import kamil.lipinski.testapp.jwt.JwtUserDetailsService;
 import kamil.lipinski.testapp.pula.PulaRepository;
 import kamil.lipinski.testapp.pytanie.PytanieRepository;
-import kamil.lipinski.testapp.test.Test;
 import kamil.lipinski.testapp.test.TestRepository;
 import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 import kamil.lipinski.testapp.uzytkownik.UzytkownikRepository;

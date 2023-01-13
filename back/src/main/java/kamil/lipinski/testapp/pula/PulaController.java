@@ -5,8 +5,6 @@ import kamil.lipinski.testapp.odpowiedz.OdpowiedzRepository;
 import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.test.Test;
 import kamil.lipinski.testapp.test.TestRepository;
-import kamil.lipinski.testapp.wynik.Wynik;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,7 +89,8 @@ public class PulaController {
             }
             pytanieRepository.delete(p);
         }
-        pulaRepository.delete(pulaRepository.findPulaByPulaID(pulaID));
+        pula.setCzyZarchiwizowana(true);
+        pulaRepository.save(pula);
         responseMap.put("error", false);
         responseMap.put("message", "Usunięto pulę pytań");
         return ResponseEntity.ok(responseMap);
@@ -127,7 +126,7 @@ public class PulaController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         Pula pula = pulaRepository.findPulaByPulaID(pulaID);
-        if(pula == null){
+        if(pula == null || pula.isCzyZarchiwizowana()){
             return ResponseEntity.notFound().build();
         }
         if(!pula.getUzytkownik().getUzytkownikID().equals(uzytkownik.getUzytkownikID())){

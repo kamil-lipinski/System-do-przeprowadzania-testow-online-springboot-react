@@ -100,7 +100,7 @@ function NauczycielTestyZakonczone() {
     let [hourB, minuteB, secondB] = timeB.split(":");
     const dataB = new Date(yearB, monthB - 1, dayB, hourB, minuteB, secondB);
 
-    return dataA - dataB;
+    return dataB - dataA;
   });
   
   const testsForCurrentPage = sortedTests.slice(currentPage * 8, (currentPage + 1) * 8);
@@ -362,7 +362,7 @@ function NauczycielTestyZakonczone() {
                     <Card.Text><span style={{fontWeight:"500"}}>Czas: </span>{test.czas} min</Card.Text>
                     <Card.Text><span style={{fontWeight:"500"}}>Ilość pytań: </span>{test.iloscPytan}</Card.Text>
                     <Card.Text><span style={{fontWeight:"500"}}>Zapisanych: </span>{test.iloscZapisanych}</Card.Text>
-                    <button type="button" className="custom-button2">Zobacz wyniki</button>
+                    <button type="button" className="custom-button2" onClick={() => window.location.href = `/nauczyciel-wyniki2/?testID=${test.testID}`}>Zobacz wyniki</button>
                   </Card.Body>
                 </Card>
               </Col>

@@ -1,0 +1,16 @@
+.rdt_Table {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.rdt_TableRow {
+    font-size: 15px;
+}
+
+.rdt_TableCol {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    background-color: #2a71ce;
+}
+

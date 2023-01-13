@@ -13,6 +13,6 @@ public interface PulaRepository extends JpaRepository<Pula, Long> {
     @Query(value = "SELECT * FROM pula p WHERE p.uzytkownikid =:uzytkownikID", nativeQuery = true)
     ArrayList<Pula> findPulaByUzytkownikID(@Param("uzytkownikID") Long uzytkownikID);
 
-    @Query(value = "SELECT * FROM pula p WHERE p.uzytkownikid =:uzytkownikID ORDER BY p.pulaid desc", nativeQuery = true)
+    @Query(value = "SELECT * FROM pula p WHERE p.uzytkownikid =:uzytkownikID AND p.czy_zarchiwizowana = false ORDER BY p.pulaid desc", nativeQuery = true)
     ArrayList<Pula> findPulaByUzytkownikIDOrderByPulaIDDesc(@Param("uzytkownikID") Long uzytkownikID);
 }
