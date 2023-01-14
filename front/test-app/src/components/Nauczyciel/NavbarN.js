@@ -7,7 +7,7 @@ function NavbarN() {
     const location = useLocation();
     const pulePytanActive = location.pathname === '/nauczyciel-pule' || location.pathname === '/wyswietl-pytania/';
     const testyActive = location.pathname === '/nauczyciel-testy/zaplanowane' || location.pathname === '/nauczyciel-testy/trwajace' || location.pathname === '/nauczyciel-testy/zakonczone';
-    const wynikiActive = location.pathname === '/nauczyciel-wyniki';
+    const wynikiActive = location.pathname === '/nauczyciel-wyniki' || location.pathname === '/nauczyciel-wyniki2/';
 
     return (
       <nav className="custom-navbar">

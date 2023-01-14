@@ -113,14 +113,14 @@ function NauczycielWyniki2() {
             <NavbarN/>
             <ToastContainer/>
             <div style={{marginTop:"150px", width:"80%"}}>
-                <div style={{height:"10px"}}/>
-                <label className="custom-label4" style={{top:'126px', zIndex:"10"}}>
+                {/* <div style={{height:"10px"}}/> */}
+                <label className="custom-label4" style={{top:'116px', zIndex:"10"}}>
                     <span style={{ fontWeight: "500" }}>Test: </span><span style={{ fontWeight:"normal" }}>{wyniki[0]?.test.nazwa || ''}</span>
                 </label>
-                <label className="custom-label4" style={{top:'153px', zIndex:"10"}}>
+                <label className="custom-label4" style={{top:'143px', zIndex:"10"}}>
                     <span style={{ fontWeight: "500" }}>Data: </span><span style={{ fontWeight:"normal" }}>{wyniki[0]?.test.data || ''}</span>
                 </label>
-                <label className="custom-label4" style={{top:'180px', zIndex:"10"}}>
+                <label className="custom-label4" style={{top:'170px', zIndex:"10"}}>
                     <span style={{ fontWeight: "500" }}>Punktów do zdobycia: </span><span style={{ fontWeight: "bold", color: "#2a71ce"  }}>{wyniki[0]?.test.iloscPytan || ''}</span>
                 </label>
                 <DataTable

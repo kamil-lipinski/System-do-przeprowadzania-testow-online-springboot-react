@@ -161,11 +161,10 @@ function NauczycielWyniki() {
             <NavbarN/>
             <ToastContainer/>
             <div style={{marginTop:"150px", width:"80%"}}>
-                <div style={{height:"10px"}}/>
                 <DataTable
                     columns={columns}
                     data={filteredItems}
-                    defaultSortField="data"
+                    defaultSortFieldId="data"
                     defaultSortAsc={true}
                     striped
                     pagination
