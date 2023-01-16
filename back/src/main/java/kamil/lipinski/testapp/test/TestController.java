@@ -108,14 +108,14 @@ public class TestController {
             }
         }
         String data = JSON.get("data").toString();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-//        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
-//        LocalDateTime dataTeraz= LocalDateTime.now();
-//        if(dataTestu.isBefore(dataTeraz.plusHours(1))){
-//            responseMap.put("error", true);
-//            responseMap.put("message", "Test musi być zaplanowany przynajmniej 1h przed wyznaczoną data");
-//            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
-//        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        LocalDateTime dataTestu = LocalDateTime.parse(data, formatter);
+        LocalDateTime dataTeraz= LocalDateTime.now();
+        if(dataTestu.isBefore(dataTeraz.plusHours(1))){
+            responseMap.put("error", true);
+            responseMap.put("message", "Test musi być zaplanowany przynajmniej 1h przed wyznaczoną datą");
+            return ResponseEntity.status(400).body(responseMap); //400 Bad Request
+        }
         Long pulaID = Long.valueOf(JSON.get("pulaID").toString());
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);
         if(pytania.size() < 5){
