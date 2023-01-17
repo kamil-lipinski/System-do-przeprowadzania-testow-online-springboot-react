@@ -37,9 +37,9 @@ function Login() {
     axios.post('http://localhost:8080/auth/zaloguj', { email: transformedEmail, haslo: haslo }, {})
     .then(response => {
       if (response.status === 200 ) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('czyNauczyciel', response.data.czyNauczyciel);
-        if (localStorage.czyNauczyciel === 'true') {
+        sessionStorage.setItem('token', response.data.token);
+        sessionStorage.setItem('czyNauczyciel', response.data.czyNauczyciel);
+        if (sessionStorage.czyNauczyciel === 'true') {
           window.location.href = '/nauczyciel-pule';
         } else {
           window.location.href = '/uczen-testy/zaplanowane';

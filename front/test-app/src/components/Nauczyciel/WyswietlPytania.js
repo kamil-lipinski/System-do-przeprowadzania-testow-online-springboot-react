@@ -25,7 +25,7 @@ function WyswietlPytania() {
     const [popup3, setPopup3] = useState(false);
     const [popup4, setPopup4] = useState(false);
     const [pytanieID, setPytanieID] = useState('');
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const [nowaNazwa, setNowaNazwa] = useState('');
     const [tresc, setTresc] = useState('');
     const [a, setA] = useState('');
@@ -107,7 +107,7 @@ function WyswietlPytania() {
     const handleDelete = async () => {
         axios.delete(`http://localhost:8080/pytanie/usun_pytanie/?pytanieID=${pytanieID}`, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                Authorization: `Bearer ${token}`,
             },
         })
         .then(response => {
@@ -138,7 +138,7 @@ function WyswietlPytania() {
     
         axios.put(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${pulaID}`, { nazwa: nowaNazwa }, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(response => {
@@ -261,7 +261,7 @@ function WyswietlPytania() {
 
         axios.post(`http://localhost:8080/pytanie/stworz_pytanie`, data, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(response => {
@@ -398,7 +398,7 @@ function WyswietlPytania() {
 
         axios.put(`http://localhost:8080/pytanie/edytuj_pytanie/?pytanieID=${pytanieID}`, data, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(response => {

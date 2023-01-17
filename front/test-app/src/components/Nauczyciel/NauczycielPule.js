@@ -23,7 +23,7 @@ function NauczycielPule() {
   const [popup2, setPopup2] = useState(false);
   const [popup3, setPopup3] = useState(false);
   const [pulaID, setPulaID] = useState('');
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const [nazwaTest, setNazwaTest] = useState('');
   const [czasTest, setCzasTest] = useState('');
   const [iloscPytanTest, setIloscPytanTest] = useState('');
@@ -93,7 +93,7 @@ function NauczycielPule() {
   const handleDelete = async () => {
     axios.delete(`http://localhost:8080/pula/usun_pule/?pulaID=${pulaID}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
@@ -111,7 +111,7 @@ function NauczycielPule() {
   const handleClickStworz = async () => {
     axios.post(`http://localhost:8080/pula/stworz_pule`, {}, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
@@ -140,7 +140,7 @@ function NauczycielPule() {
 
     axios.put(`http://localhost:8080/pula/zmien_nazwe/?pulaID=${pulaID}`, { nazwa: nazwa }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
@@ -193,7 +193,7 @@ function NauczycielPule() {
                                                       iloscPytan: iloscPytanTest 
                                                     }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {

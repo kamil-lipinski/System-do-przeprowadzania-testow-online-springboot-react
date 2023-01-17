@@ -21,7 +21,7 @@ function UczenWyswietlTest() {
     const [popup2, setPopup2] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const numPages = Math.ceil(pytania.length / 72);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const [currentTime, setCurrentTime] = useState(new Date());
     const [test, setTest] = useState({});
     const [a, setA] = useState(false);
@@ -231,7 +231,7 @@ function UczenWyswietlTest() {
 
         axios.put(`http://localhost:8080/odpowiedz/odpowiedz_na_pytanie/?pytanieID=${pytanieID}&testID=${testID}`, data, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(response => {
@@ -249,7 +249,7 @@ function UczenWyswietlTest() {
     function zakonczTest() {
         axios.put(`http://localhost:8080/test/zakoncz_test/?testID=${testID}`, {}, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${token}`,
           },
         })
         .then(response => {

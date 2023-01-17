@@ -13,7 +13,7 @@ function NauczycielWyniki2() {
     const currentUrl = window.location.search;
     const testID = new URLSearchParams(currentUrl).get('testID');
     const [wyniki, setWyniki] = useState([]);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     const showError = message => {
         toast.error(message, {

@@ -19,7 +19,7 @@ function NauczycielTestyZakonczone() {
   const [testy, setTesty] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const numPages = Math.ceil(testy.length / 8);
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const [popup3, setPopup3] = useState(false);
   const [nazwaTest, setNazwaTest] = useState('');
   const [czasTest, setCzasTest] = useState('');
@@ -161,7 +161,7 @@ function NauczycielTestyZakonczone() {
                                                       iloscPytan: iloscPytanTest 
                                                     }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {

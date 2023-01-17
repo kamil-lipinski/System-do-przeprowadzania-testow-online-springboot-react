@@ -11,7 +11,7 @@ import './nauczycielwyniki.css';
 
 function NauczycielWyniki() {
     const [wyniki, setWyniki] = useState([]);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
 
     const showError = message => {
         toast.error(message, {

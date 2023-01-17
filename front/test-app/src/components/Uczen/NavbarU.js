@@ -18,7 +18,7 @@ function NavbarU() {
           <button className={wynikiActive ? 'active' : ''} onClick={() => window.location.href = '/uczen-wyniki'}>Wyniki</button>
         </div>
         <div className="right-side">
-          <button onClick={() => {window.location.href = '/'; localStorage.clear()}}>Wyloguj  <TbLogout size={23} style={{ stroke: "white", strokeWidth: "2"}}/></button>
+          <button onClick={() => {window.location.href = '/'; sessionStorage.clear()}}>Wyloguj  <TbLogout size={23} style={{ stroke: "white", strokeWidth: "2"}}/></button>
         </div>
       </nav>
     );

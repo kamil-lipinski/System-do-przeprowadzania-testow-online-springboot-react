@@ -20,7 +20,7 @@ function NauczycielTestyZaplanowane() {
   const [testy, setTesty] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const numPages = Math.ceil(testy.length / 8);
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [popup2, setPopup2] = useState(false);
   const [popup3, setPopup3] = useState(false);
@@ -160,7 +160,7 @@ function NauczycielTestyZaplanowane() {
   const handleDelete = async () => {
     axios.delete(`http://localhost:8080/test/odwolaj_test/?testID=${testID}`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {
@@ -227,7 +227,7 @@ function NauczycielTestyZaplanowane() {
                                                       iloscPytan: iloscPytanTest 
                                                     }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
     .then(response => {

@@ -17,7 +17,7 @@ function UczenTestyZakonczone() {
     const [testy, setTesty] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const numPages = Math.ceil(testy.length / 8);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const [popup, setPopup] = useState(false);
     const [kodDostepu, setKodDostepu] = useState('');
     const [wynik, setWynik] = useState({});
@@ -113,7 +113,7 @@ function UczenTestyZakonczone() {
 
         axios.post("http://localhost:8080/test/zapisz_sie_na_test", {kodDostepu : kodDostepu}, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                Authorization: `Bearer ${token}`,
             },
         })
         .then(response => {
