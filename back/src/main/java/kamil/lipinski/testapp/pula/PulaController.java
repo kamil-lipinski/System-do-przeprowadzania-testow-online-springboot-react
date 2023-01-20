@@ -49,7 +49,7 @@ public class PulaController {
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
-            responseMap.put("message", "Uzytkownik nie ma uprawnień do tworzenia pul pytań");
+            responseMap.put("message", "Użytkownik nie ma uprawnień do tworzenia pul pytań");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         Pula nowaPula = new Pula(uzytkownik, "Nowa pula");
@@ -75,7 +75,7 @@ public class PulaController {
         for(Test t : testy){
             if(!(t.getStatus().equals("zakonczony"))){
                 responseMap.put("error", true);
-                responseMap.put("message", "Nie można usunąć puli do której trwają lub są zaplanowane testy");
+                responseMap.put("message", "Nie można usunąć puli do której trwają lub zaplanowane są testy");
                 return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
         }

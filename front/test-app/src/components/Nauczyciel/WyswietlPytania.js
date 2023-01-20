@@ -312,6 +312,25 @@ function WyswietlPytania() {
         if (e === ''){delete data.e;}
         if (f === ''){delete data.f;}
 
+        if(i === 0){
+            data.c = null
+            data.d = null
+            data.e = null
+            data.f = null 
+        }
+        if(i === 1){
+            data.d = null
+            data.e = null
+            data.f = null 
+        }
+        if(i === 2){
+            data.e = null
+            data.f = null 
+        }
+        if(i === 3){
+            data.f = null 
+        }
+
         if (tresc.length > 200) {
             showError("Treść nie może zawierać więcej niż 200 znaków");
             return;

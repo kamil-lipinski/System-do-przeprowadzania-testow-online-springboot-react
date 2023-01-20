@@ -44,7 +44,7 @@ public class AuthenticationController {
         for(String i : parameters)
             if(JSON.get(i) == null) {
                 responseMap.put("error", true);
-                responseMap.put("message", "Nie podano wszystkich wymaganych pol");
+                responseMap.put("message", "Nie podano wszystkich wymaganych pól");
                 ResponseEntity.status(400).body(responseMap); //400 Bad Request
             }
         String email = JSON.get("email").toString();
@@ -102,14 +102,14 @@ public class AuthenticationController {
         Uzytkownik nowyUzytkownik = uzytkownikRepository.findUzytkownikByEmail(email);
         if(nowyUzytkownik != null) {
             responseMap.put("error", true);
-            responseMap.put("message", "Uzytkownik o adresie email "+email+" juz istnieje");
+            responseMap.put("message", "Użytkownik o adresie email "+email+" już istnieje");
             return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
 
         nowyUzytkownik = new Uzytkownik(imie, nazwisko, email, new BCryptPasswordEncoder().encode(haslo), czyNauczyciel);
         uzytkownikRepository.save(nowyUzytkownik);
         responseMap.put("error", false);
-        responseMap.put("message", "Konto zostalo utworzone pomyslnie");
+        responseMap.put("message", "Konto zostało utworzone");
         return ResponseEntity.ok(responseMap);
     }
 

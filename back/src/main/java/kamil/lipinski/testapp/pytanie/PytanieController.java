@@ -111,7 +111,7 @@ public class PytanieController {
         pula.setIloscPytan(pula.getIloscPytan()+1);
         pytanieRepository.save(nowePytanie);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie dodano pytanie");
+        responseMap.put("message", "Utworzono nowe pytanie");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -175,21 +175,29 @@ public class PytanieController {
             edytowanePytanie.setC(JSON.get("c").toString());
             edytowanePytanie.setCPoprawne(Boolean.valueOf(JSON.get("cPoprawne").toString()));
             if(Boolean.valueOf(JSON.get("cPoprawne").toString()) == true) poprawne++;
+        }else{
+            edytowanePytanie.setC(null);
         }
         if(JSON.get("d") != null){
             edytowanePytanie.setD(JSON.get("d").toString());
             edytowanePytanie.setDPoprawne(Boolean.valueOf(JSON.get("dPoprawne").toString()));
             if(Boolean.valueOf(JSON.get("dPoprawne").toString()) == true) poprawne++;
+        }else{
+            edytowanePytanie.setD(null);
         }
         if(JSON.get("e") != null){
             edytowanePytanie.setE(JSON.get("e").toString());
             edytowanePytanie.setEPoprawne(Boolean.valueOf(JSON.get("ePoprawne").toString()));
             if(Boolean.valueOf(JSON.get("ePoprawne").toString()) == true) poprawne++;
+        }else{
+            edytowanePytanie.setE(null);
         }
         if(JSON.get("f") != null){
             edytowanePytanie.setF(JSON.get("f").toString());
             edytowanePytanie.setFPoprawne(Boolean.valueOf(JSON.get("fPoprawne").toString()));
             if(Boolean.valueOf(JSON.get("fPoprawne").toString()) == true) poprawne++;
+        }else{
+            edytowanePytanie.setF(null);
         }
         if(poprawne == 0){
             responseMap.put("error", true);
@@ -198,7 +206,7 @@ public class PytanieController {
         }
         pytanieRepository.save(edytowanePytanie);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyslnie edytowano pytanie");
+        responseMap.put("message", "Zapisano zmiany w pytaniu");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -230,7 +238,7 @@ public class PytanieController {
         pula.setIloscPytan(pula.getIloscPytan()-1);
         pytanieRepository.delete(pytanie);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie usunieto pytanie");
+        responseMap.put("message", "Usunięto pytanie z puli");
         return ResponseEntity.ok(responseMap);
     }
 }

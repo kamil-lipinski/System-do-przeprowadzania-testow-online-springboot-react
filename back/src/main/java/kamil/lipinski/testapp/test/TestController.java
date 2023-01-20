@@ -96,7 +96,7 @@ public class TestController {
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         if(!(uzytkownik.isCzyNauczyciel())){
             responseMap.put("error", true);
-            responseMap.put("message", "uzytkownik nie ma uprawnien do zaplanowania testu");
+            responseMap.put("message", "Użytkownik nie ma uprawniń do zaplanowania testu");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         String [] parameters = {"pulaID", "nazwa", "data", "czas", "iloscPytan"};
@@ -138,7 +138,7 @@ public class TestController {
         Test nowyTest = new Test(pulaRepository.findPulaByPulaID(pulaID), nazwa, data, czas, iloscPytan, kodDostepu);
         testRepository.save(nowyTest);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyslnie zaplanowano test");
+        responseMap.put("message", "Zaplanowano test");
         responseMap.put("kodDostepu", kodDostepu);
         return ResponseEntity.ok(responseMap);
     }
@@ -165,7 +165,7 @@ public class TestController {
         LocalDateTime dataTeraz= LocalDateTime.now();
         if(!(dataTestu.isAfter(dataTeraz.plusHours(1)))){
             responseMap.put("error", true);
-            responseMap.put("message", "Test można odwołać maksymalnie 1H przed zaplanowanym rozpoczęciem");
+            responseMap.put("message", "Test można odwołać maksymalnie 1h przed zaplanowanym rozpoczęciem");
             return ResponseEntity.status(403).body(responseMap); //403 Forbidden
         }
         ArrayList<Wynik> wyniki = wynikRepository.findWynikByTestID(testID);
@@ -202,7 +202,7 @@ public class TestController {
         if(wynikRepository.findWynikByTestIDAndUzytkownikID(
                 test.getTestID(),uzytkownik.getUzytkownikID()) != null){
             responseMap.put("error", true);
-            responseMap.put("message", "Użytkownik jest juz zapisany na ten test");
+            responseMap.put("message", "Użytkownik jest już zapisany na ten test");
             return ResponseEntity.status(409).body(responseMap); //409 Conflict
         }
         Wynik nowyWynik = new Wynik(uzytkownik, test);
@@ -222,7 +222,7 @@ public class TestController {
         test.setIloscZapisanych(test.getIloscZapisanych()+1);
         testRepository.save(test);
         responseMap.put("error", false);
-        responseMap.put("message", "Pomyślnie zapisano na test");
+        responseMap.put("message", "Zapisano na test");
         return ResponseEntity.ok(responseMap);
     }
 
@@ -255,7 +255,7 @@ public class TestController {
         wynikRepository.save(wynik);
         int max = testRepository.findTestByTestID(testID).getIloscPytan();
         responseMap.put("error", false);
-        responseMap.put("message", "Zakonczono test. Wynik testu: " +punkty +"/" +max);
+        responseMap.put("message", "Zakończono test. Wynik testu: " +punkty +"/" +max);
         responseMap.put("wynik", punkty);
         return ResponseEntity.ok(responseMap);
     }
