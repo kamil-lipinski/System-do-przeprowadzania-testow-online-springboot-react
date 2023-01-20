@@ -50,7 +50,7 @@ public class OdpowiedzController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Uzytkownik uzytkownik = uzytkownikRepository.findUzytkownikByEmail(authentication.getName());
         Wynik wynik = wynikRepository.findWynikByTestIDAndUzytkownikID(testID, uzytkownik.getUzytkownikID());
-        Odpowiedz nowaOdpowiedz = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(pytanieID, uzytkownik.getUzytkownikID(),wynik.getWynikID());
+        Odpowiedz nowaOdpowiedz = odpowiedzRepository.findOdpowiedzByPytanieIDAndWynikID(pytanieID,wynik.getWynikID());
         if(testRepository.findTestByTestID(testID).getStatus().equals("zakonczony")){
             responseMap.put("error", true);
             responseMap.put("message", "Test został już zakonczony");

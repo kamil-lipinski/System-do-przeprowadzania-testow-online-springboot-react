@@ -33,9 +33,9 @@ public class Odpowiedz {
     private Boolean e = false;
     private Boolean f = false;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
-    @JoinColumn(name="uzytkownikID")
-    private Uzytkownik uzytkownik;
+//    @ManyToOne(cascade = CascadeType.REFRESH)
+//    @JoinColumn(name="uzytkownikID")
+//    private Uzytkownik uzytkownik;
 
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pytanieID")
@@ -45,8 +45,8 @@ public class Odpowiedz {
     @JoinColumn(name="wynikID")
     private Wynik wynik;
 
-    public Odpowiedz(Uzytkownik uzytkownik, Pytanie pytanie, Wynik wynik, int numerPytania){
-        this.uzytkownik = uzytkownik;
+    public Odpowiedz(Pytanie pytanie, Wynik wynik, int numerPytania){
+//        this.uzytkownik = uzytkownik;
         this.pytanie = pytanie;
         this.wynik = wynik;
         this.numerPytania = numerPytania;

@@ -70,7 +70,7 @@ public class TestController {
                     int punkty = 0;
                     ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(t.getTestID()).getPula().getPulaID());
                     for(Pytanie p : pytania){
-                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),w.getUzytkownik().getUzytkownikID(),w.getWynikID());
+                        Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndWynikID(p.getPytanieID(),w.getWynikID());
                         if(odp != null){
                             if(odp.getA().equals(p.getAPoprawne()) &&
                                     odp.getB().equals(p.getBPoprawne()) &&
@@ -213,7 +213,7 @@ public class TestController {
         while (iloscPytan != 0){
             Random rand = new Random();
             int n = rand.nextInt(pytania.size());
-            Odpowiedz nowaOdpowiedz = new Odpowiedz(uzytkownik,pytania.get(n),nowyWynik,numerPytania);
+            Odpowiedz nowaOdpowiedz = new Odpowiedz(pytania.get(n),nowyWynik,numerPytania);
             odpowiedzRepository.save(nowaOdpowiedz);
             pytania.remove(n);
             numerPytania++;
@@ -241,7 +241,7 @@ public class TestController {
         int punkty = 0;
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(testRepository.findTestByTestID(testID).getPula().getPulaID());
         for(Pytanie p : pytania){
-            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDUzytkownikIDAndWynikID(p.getPytanieID(),uzytkownik.getUzytkownikID(),wynik.getWynikID());
+            Odpowiedz odp = odpowiedzRepository.findOdpowiedzByPytanieIDAndWynikID(p.getPytanieID(),wynik.getWynikID());
             if(odp != null){
                 if(odp.getA().equals(p.getAPoprawne()) &&
                         odp.getB().equals(p.getBPoprawne()) &&
@@ -272,7 +272,7 @@ public class TestController {
             return ResponseEntity.notFound().build();
         }
         ArrayList<Pytanie> pytaniaUzytkownika = new ArrayList<>();
-        ArrayList<Odpowiedz> odp = odpowiedzRepository.findOdpowiedzByUzytkownikIDAndWynikID(uzytkownik.getUzytkownikID(), wynik.getWynikID());
+        ArrayList<Odpowiedz> odp = odpowiedzRepository.findOdpowiedzByWynikID(wynik.getWynikID());
         for(Odpowiedz o : odp){
             Pytanie pytanie = pytanieRepository.findPytanieByPytanieID(o.getPytanie().getPytanieID());
             pytanie.setPula(null);

@@ -337,7 +337,7 @@ function NauczycielPule() {
                 <Card className="card-custom">
                   <Card.Body className="card-body">
                     <Card.Title>{pula.nazwa}
-                    <button type="button" className="custom-button6" onClick={() => {setPopup(true); setPulaID(pula.pulaID)}}><HiOutlinePencilAlt /></button>
+                    <button type="button" className="custom-button6" onClick={() => {setPopup(true); setPulaID(pula.pulaID); setNazwa('')}}><HiOutlinePencilAlt /></button>
                     </Card.Title>
                     <Card.Text>Ilość pytań: {pula.iloscPytan}</Card.Text>
                     <button type="button" className="custom-button2" onClick={() => window.location.href = `/wyswietl-pytania/?pulaID=${pula.pulaID}`}>Zarządzaj pytaniami</button>

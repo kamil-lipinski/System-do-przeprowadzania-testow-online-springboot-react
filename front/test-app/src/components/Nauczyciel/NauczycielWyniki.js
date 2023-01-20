@@ -99,6 +99,11 @@ function NauczycielWyniki() {
             selector: row => row.wynik,
             sortable: true,
         },
+        {
+            name: 'Punktów do zdobycia',
+            selector: row => row.pdz,
+            sortable: true,
+        },
     ];
 
     const data = [];
@@ -112,6 +117,7 @@ function NauczycielWyniki() {
             data: wyniki[i].test.data,
             czas: wyniki[i].test.czas,
             wynik: wyniki[i].wynik,
+            pdz: wyniki[i].test.iloscPytan,
         }
     }
 

@@ -78,8 +78,6 @@ public class PulaController {
                 responseMap.put("message", "Nie można usunąć puli do której trwają lub są zaplanowane testy");
                 return ResponseEntity.status(403).body(responseMap); //403 Forbidden
             }
-            t.setPula(null);
-            testRepository.save(t);
         }
         ArrayList<Pytanie> pytania = pytanieRepository.findPytanieByPulaID(pulaID);
         for(Pytanie p : pytania){
