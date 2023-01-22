@@ -342,7 +342,7 @@ function NauczycielPule() {
                     <Card.Text>Ilość pytań: {pula.iloscPytan}</Card.Text>
                     <button type="button" className="custom-button2" onClick={() => window.location.href = `/wyswietl-pytania/?pulaID=${pula.pulaID}`}>Zarządzaj pytaniami</button>
                     <button type="button" className="custom-button2" onClick={() => {if(pula.iloscPytan >= 5){setPopup3(true); setPulaID(pula.pulaID); setIloscPytanWPuli(pula.iloscPytan)}else{showError("W puli musi być przynajmniej 5 pytań aby zaplanować test")}}}>Zaplanuj test</button>
-                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setPulaID(pula.pulaID)}}>Usuń pule</button>
+                    <button type="button" className="custom-button3" onClick={() => {setPopup2(true); setPulaID(pula.pulaID)}}>Usuń pulę</button>
                   </Card.Body>
                 </Card>
               </Col>

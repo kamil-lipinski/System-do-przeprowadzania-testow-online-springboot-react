@@ -178,6 +178,7 @@ function NauczycielWyniki() {
                     subHeaderComponent={subHeaderComponent}
                     fixedHeader
                     fixedHeaderScrollHeight="552px"
+                    noDataComponent="Brak wyników do wyświetlenia..."
                 />
             </div>
         </div>

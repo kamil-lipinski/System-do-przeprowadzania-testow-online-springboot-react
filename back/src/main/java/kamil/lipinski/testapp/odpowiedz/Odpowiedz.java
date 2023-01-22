@@ -1,6 +1,5 @@
 package kamil.lipinski.testapp.odpowiedz;
 
-import kamil.lipinski.testapp.uzytkownik.Uzytkownik;
 import kamil.lipinski.testapp.pytanie.Pytanie;
 import kamil.lipinski.testapp.wynik.Wynik;
 import lombok.Getter;
@@ -33,10 +32,6 @@ public class Odpowiedz {
     private Boolean e = false;
     private Boolean f = false;
 
-//    @ManyToOne(cascade = CascadeType.REFRESH)
-//    @JoinColumn(name="uzytkownikID")
-//    private Uzytkownik uzytkownik;
-
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="pytanieID")
     private Pytanie pytanie;
@@ -46,10 +41,8 @@ public class Odpowiedz {
     private Wynik wynik;
 
     public Odpowiedz(Pytanie pytanie, Wynik wynik, int numerPytania){
-//        this.uzytkownik = uzytkownik;
         this.pytanie = pytanie;
         this.wynik = wynik;
         this.numerPytania = numerPytania;
     }
-
 }
